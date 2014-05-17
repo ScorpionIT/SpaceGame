@@ -9,6 +9,6 @@ SOURCES += \
 
 LIBS += -lGLU -lglut
 
-QT += 3d
+QT += opengl
 
 OTHER_FILES += /home/alessandro/Desktop/Unical/Informatica Grafica/QtProgetto/sky.bmp
