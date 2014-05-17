@@ -1,13 +1,17 @@
 HEADERS += \
     gameengine.h \
     sky.h \
-    abstractengineobject.h
+    abstractengineobject.h \
+    keymanager.h \
+    camera.h
 
 SOURCES += \
     gameengine.cpp \
     sky.cpp \
     abstractengineobject.cpp \
-    main.cpp
+    main.cpp \
+    keymanager.cpp \
+    camera.cpp
 
 LIBS += -lGLU -lglut
 

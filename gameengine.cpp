@@ -1,11 +1,42 @@
 #include "gameengine.h"
 #include <QDebug>
 
-GameEngine::GameEngine()
+GameEngine::GameEngine(Camera *camera)
 {
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(move()));
-    timer->start(10);
+    this->camera = camera;
+
+    ambientLight[0] = 0.5;
+    ambientLight[1] = 0.5;
+    ambientLight[2] = 0.5;
+    ambientLight[3] = 1.0;
+
+    specular[0] = 1.0;
+    specular[1] = 1.0;
+    specular[2] = 0.0;
+    specular[3] = 1.0;
+
+    specref[0] = 1.0;
+    specref[1] = 1.0;
+    specref[2] = 1.0;
+    specref[3] = 1.0;
+
+    lightPos0[0] = 0.0;
+    lightPos0[1] = 0.0;
+    lightPos0[2] = 15000.0;
+    lightPos0[3] = 1.0;
+
+    spotDir0[0] = 0.0;
+    spotDir0[1] = 0.0;
+    spotDir0[2] = -0.0;
+
+    /*CameraEye[0] = 0;
+    CameraEye[1] = -15;
+    CameraEye[2] = 5;
+
+    CameraForward[0] = 0;
+    CameraForward[1] = 0;
+    CameraForward[2] = 0;*/
+
     objs = new QList<AbstractEngineObject*>;
 }
 
@@ -38,177 +69,41 @@ void GameEngine::initializeGL()
     glClearColor (1.0, 1.0, 1.0, 0.0);
 }
 
-void GameEngine::paintGL()
-{
-
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glPushMatrix();
-          gluLookAt(px,py,pz,fx,fy,fz, 0.0, 0.0,1.0);
-
-          glPushMatrix();
-
-            for (QList<AbstractEngineObject*>::iterator i = objs->begin(); i != objs->end(); i++)
-            {
-                if ((*i)->hasTexture())
-                {
-                    GLuint textureId = loadTexture ( (*i)->getTexturePath() );
-                    glBindTexture(GL_TEXTURE_2D, textureId);
-                }
-                (*i)->render();
-            }
-
-          glPopMatrix();
-
-        glPopMatrix();
-
-        swapBuffers();
-}
-
 void GameEngine::resizeGL(int w, int h)
 {
     glViewport(0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(60, (GLfloat) w/(GLfloat) h, 1,SKY_SIZE*100);
+    gluPerspective(60, (GLfloat) w/(GLfloat) h, 1, 800); //TODO
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
 
-void GameEngine::keyPressEvent(QKeyEvent* event)
+void GameEngine::paintGL()
 {
-    if(event->key()==Qt::Key_Up)
-       seeUp=true;
-    if(event->key()==Qt::Key_Down)
-        seeDown=true;
-    if(event->key()==Qt::Key_Right)
-        seeRight=true;
-    if(event->key()==Qt::Key_Left)
-        seeLeft=true;
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if(event->key()==Qt::Key_W)
-        incrementShift=true;
-    if(event->key()==Qt::Key_S)
-        decrementShift=true;
+  glPushMatrix();
 
+    camera->render();
 
-}
+    glPushMatrix();
 
+      for (QList<AbstractEngineObject*>::iterator i = objs->begin(); i != objs->end(); i++)
+      {
+          if ((*i)->hasTexture())
+          {
+              GLuint textureId = loadTexture ( (*i)->getTexturePath() );
+              glBindTexture(GL_TEXTURE_2D, textureId);
+          }
+          (*i)->render();
+      }
 
-void GameEngine::keyReleaseEvent(QKeyEvent* event)
-{
-    if(event->key()==Qt::Key_Up)
-            seeUp=false;
-    if(event->key()==Qt::Key_Down)
-            seeDown=false;
-    if(event->key()==Qt::Key_Right)
-            seeRight=false;
-    if(event->key()==Qt::Key_Left)
-            seeLeft=false;
+    glPopMatrix();
 
-    if(event->key()==Qt::Key_W)
-        incrementShift=false;
-    if(event->key()==Qt::Key_S)
-        decrementShift=false;
-}
+  glPopMatrix();
 
-void GameEngine::move()
-{
-
-    GLdouble pxNew=0,pyNew=0,pzNew=0;
-    if(incrementShift)
-    {
-        shift=shift+MIN_SPEED;
-        if(shift>MAX_SPEED)
-            shift=MAX_SPEED;
-    }
-
-    if(decrementShift)
-    {
-        shift=shift-MIN_SPEED;
-        if(shift<MIN_SPEED)
-            shift=MIN_SPEED;
-    }
-    if(moveUp)
-    {
-        GLdouble cosen=cos(rotateXY*M_PI/180);
-        GLdouble sen=sin(rotateXY*M_PI/180);
-        pxNew=shift*cosen;
-        pyNew=shift*sen;
-        pzNew=rotateXZ*shift;
-        if(/*!collision(-4+fx+pxNew*32,-10+fy+pyNew*32,-20+fz+pzNew*32) && insideSky(px+pxNew,py+pyNew,pz+pzNew)*/ true)
-        {
-            px+=pxNew;
-            py+=pyNew;
-            pz+=pzNew;
-            fx=fx+shift*cosen;
-            fy=fy+shift*sen;
-            fz=fz+pzNew;
-        }
-        if(/*collisionCheckpoint(px,py,pz)*/true)
-        {
-            playerTimer+=TIME_CHECKPOINT;
-        }
-
-    }
-    if(seeUp && rotateXZ<=5)
-    {
-        rotateXZ+=0.05;
-        fz=rotateXZ+ pz;
-    }
-    if(seeDown && rotateXZ>=-5)
-    {
-        rotateXZ-=0.05;
-        fz=rotateXZ+pz;
-
-    }
-    if(seeRight)
-    {
-        whingAngle++;
-        if(whingAngle>=10)
-            whingAngle=10;
-        rotateXY-=3;
-        if(rotateXY%360==0 )
-            rotateXY=0;
-        fx=cos(rotateXY*M_PI/180)+px;
-        fy=sin(rotateXY*M_PI/180)+py;
-        moveWhingRight=true;
-    }
-    else
-    {
-        if(moveWhingRight)
-        {
-            whingAngle--;
-            if(whingAngle<0)
-                whingAngle=0;
-        }
-    }
-
-    if(seeLeft)
-    {
-        whingAngle--;
-        if(whingAngle<=-10)
-            whingAngle=-10;
-        rotateXY+=3;
-        if(rotateXY%360==0 )
-            rotateXY=0;
-        fx=cos(rotateXY*M_PI/180)+px;
-        fy=sin(rotateXY*M_PI/180)+py;
-        moveWhingRight=false;
-    }
-    else
-    {
-        if(!moveWhingRight)
-        {
-            whingAngle++;
-            if(whingAngle>=0)
-                whingAngle=0;
-        }
-    }
-
-    // Refresh the Window
-    updateGL();
+  swapBuffers();
 }
 
 GLuint GameEngine::loadTexture(QString imgPath)

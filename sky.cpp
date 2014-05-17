@@ -26,7 +26,7 @@ void Sky::render()
   glPushMatrix();
 
       gluQuadricTexture(this->quad, true);
-      glColor3f(0.5,0.8,0.9);
+      //glColor3f(0.5,0.8,0.9);
       gluSphere(this->quad, this->size, 100, 100);
   glPopMatrix();
 }

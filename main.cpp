@@ -1,13 +1,15 @@
 
 #include <QApplication>
 #include "gameengine.h"
+#include "camera.h"
 #include "sky.h"
 
 int main(int argc,char** argv)
 {
     QApplication game(argc,argv);
 
-    GameEngine* gm = new GameEngine();
+    Camera *camera = new Camera(0, -15, 0, 0, 0, 0);
+    GameEngine* gm = new GameEngine(camera);
     Sky *sky = new Sky();
 
     gm->addObject (sky);
