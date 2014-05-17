@@ -1,11 +1,13 @@
 HEADERS += \
     gameengine.h \
-    imageloader.cpp
+    sky.h \
+    abstractengineobject.h
 
 SOURCES += \
     gameengine.cpp \
-    imageloader.cpp \
-    mainc.cpp
+    sky.cpp \
+    abstractengineobject.cpp \
+    main.cpp
 
 LIBS += -lGLU -lglut
 

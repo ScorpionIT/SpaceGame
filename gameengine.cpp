@@ -1,20 +1,13 @@
 #include "gameengine.h"
-#include <QGLSphere>
-
-struct Actor{
-    GLfloat x;
-    GLfloat y;
-    GLfloat z;
-    GLint size;
-};
+#include <QDebug>
 
 GameEngine::GameEngine()
 {
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(move()));
     timer->start(10);
+    objs = new QList<AbstractEngineObject*>;
 }
-
 
 void GameEngine::initializeGL()
 {
@@ -40,50 +33,37 @@ void GameEngine::initializeGL()
     glEnable(GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
-    quad = gluNewQuadric();
-
-    image = loadBMP("/home/alessandro/Desktop/Unical/Informatica Grafica/QtProgetto/sky.bmp");
-    textureId[0] = loadTexture(image);
-    delete image;
-
     //createRandomCheckpoint();
 
-    glClearColor (0.0, 0.0, 0.0, 0.0);
-}
-void GameEngine::drawSky()
-{
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glPushMatrix();
-            sky.x=0;
-            sky.y=0;
-            sky.z=0;
-            sky.size=SKY_SIZE;
-            gluQuadricTexture(quad,1);
-          //  glRotatef(rotateSky,0,0,1);
-            glColor3f(1,1,1);
-            gluSphere(quad, SKY_SIZE, 100, 100);
-        glPopMatrix();
+    glClearColor (1.0, 1.0, 1.0, 0.0);
 }
 
 void GameEngine::paintGL()
 {
+
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         glPushMatrix();
-      //  drawFlyingObject();
-        gluLookAt(px,py,pz,fx,fy,fz, 0.0, 0.0,1.0);
-        //cout<<"forw  "<<shift<<" zmo  "<<rotateXY<<" px  "<<px<<"  py  "<<py<<"  fx   "<<fx<<"  fy "<<fy<<"  pz  "<<pz<<" fz  "<<fz<<endl;
-    //	drawBulb();
-            glPushMatrix();
-            //drawCheckpoint();
-            drawSky();
-            glPopMatrix();
+          gluLookAt(px,py,pz,fx,fy,fz, 0.0, 0.0,1.0);
+
+          glPushMatrix();
+
+            for (QList<AbstractEngineObject*>::iterator i = objs->begin(); i != objs->end(); i++)
+            {
+                if ((*i)->hasTexture())
+                {
+                    GLuint textureId = loadTexture ( (*i)->getTexturePath() );
+                    glBindTexture(GL_TEXTURE_2D, textureId);
+                }
+                (*i)->render();
+            }
+
+          glPopMatrix();
+
         glPopMatrix();
 
         swapBuffers();
-
 }
 
 void GameEngine::resizeGL(int w, int h)
@@ -228,7 +208,35 @@ void GameEngine::move()
     }
 
     // Refresh the Window
-    update();
+    updateGL();
+}
+
+GLuint GameEngine::loadTexture(QString imgPath)
+{
+  QImage im;
+  im.load(imgPath);
+  QImage image = QGLWidget::convertToGLFormat (im);
+  if (image.isNull())
+    qDebug() << "Impossibile caricare la texture " << imgPath << endl;
+  GLuint textureId;
+  glGenTextures(1, &textureId); //Make room for our texture
+  glBindTexture(GL_TEXTURE_2D, textureId); //Tell OpenGL which texture to edit
+  //Map the image to the texture
+  glTexImage2D(GL_TEXTURE_2D,                //Always GL_TEXTURE_2D
+           0,                            //0 for now
+           GL_RGBA,                       //Format OpenGL uses for image
+           image.width(), image.height(),  //Width and height
+           0,                            //The border of the image
+           GL_RGBA, //GL_RGB, because pixels are stored in RGB format
+           GL_UNSIGNED_BYTE, //GL_UNSIGNED_BYTE, because pixels are stored
+                             //as unsigned numbers
+           image.bits());               //The actual pixel data
+  return textureId; //Returns the id of the texture
 }
 
 
+
+void GameEngine::addObject (AbstractEngineObject *obj)
+{
+  objs->append(obj);
+}
