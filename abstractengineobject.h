@@ -16,6 +16,7 @@ public:
     virtual GLfloat getPositionY();
     virtual GLfloat getPositionZ();
     virtual void setPosition (GLfloat x, GLfloat y, GLfloat z);
+    virtual GLfloat getSize()=0;
 
 private:
     GLfloat positionX;

@@ -17,7 +17,7 @@ public:
   virtual bool hasTexture();
   virtual QString getTexturePath();
   virtual void render();
-  GLfloat getSize();
+  virtual GLfloat getSize();
 
 private:
   GLfloat size;

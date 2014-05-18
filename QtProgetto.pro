@@ -4,7 +4,8 @@ HEADERS += \
     abstractengineobject.h \
     keymanager.h \
     camera.h \
-    checkpoint.h
+    checkpoint.h \
+    meteorite.h
 
 SOURCES += \
     gameengine.cpp \
@@ -13,7 +14,8 @@ SOURCES += \
     main.cpp \
     keymanager.cpp \
     camera.cpp \
-    checkpoint.cpp
+    checkpoint.cpp \
+    meteorite.cpp
 
 LIBS += -lGLU -lglut
 
