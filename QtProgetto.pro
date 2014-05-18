@@ -3,7 +3,8 @@ HEADERS += \
     sky.h \
     abstractengineobject.h \
     keymanager.h \
-    camera.h
+    camera.h \
+    checkpoint.h
 
 SOURCES += \
     gameengine.cpp \
@@ -11,7 +12,8 @@ SOURCES += \
     abstractengineobject.cpp \
     main.cpp \
     keymanager.cpp \
-    camera.cpp
+    camera.cpp \
+    checkpoint.cpp
 
 LIBS += -lGLU -lglut
 

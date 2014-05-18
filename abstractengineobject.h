@@ -8,7 +8,7 @@ class AbstractEngineObject : public QObject
 {
     Q_OBJECT
 public:
-    AbstractEngineObject(QObject *parent = 0);
+    AbstractEngineObject(GLfloat x=0,GLfloat y=0,GLfloat z=0);
     virtual bool hasTexture();
     virtual QString getTexturePath();
     virtual void render() = 0;

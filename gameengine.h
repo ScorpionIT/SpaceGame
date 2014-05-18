@@ -20,7 +20,7 @@ class GameEngine: public QGLWidget
 
 public:
 
-    GameEngine(Camera* camera);
+    GameEngine(Camera* camera,GLdouble viewVolume);
     void setCamera (Camera* camera);
     GLuint loadTexture(QString imgPath);
     void addObject (AbstractEngineObject *obj);
@@ -34,6 +34,7 @@ protected:
 private:
     QList<AbstractEngineObject*> *objs;
     Camera *camera;
+    GLdouble viewVolume;
     GLfloat ambientLight[4];
     GLfloat specular[4];
     GLfloat specref[4];

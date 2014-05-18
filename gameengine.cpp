@@ -1,7 +1,7 @@
 #include "gameengine.h"
 #include <QDebug>
 
-GameEngine::GameEngine(Camera *camera)
+GameEngine::GameEngine(Camera *camera,GLdouble viewVolume_):viewVolume(viewVolume_)
 {
     this->camera = camera;
 
@@ -66,7 +66,7 @@ void GameEngine::resizeGL(int w, int h)
     glViewport(0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(60, (GLfloat) w/(GLfloat) h, 1, 800); //TODO
+    gluPerspective(60, (GLfloat) w/(GLfloat) h, 1, viewVolume);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }

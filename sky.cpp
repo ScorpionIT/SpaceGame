@@ -1,10 +1,10 @@
 #include "sky.h"
 
-Sky::Sky()
+Sky::Sky(GLfloat size_)
 {
   quad = gluNewQuadric();
   setPosition(0, 0, 0);
-  this->size=100;
+  this->size=size_;
 }
 
 bool Sky::hasTexture()
@@ -24,7 +24,12 @@ void Sky::render()
   glPushMatrix();
 
       gluQuadricTexture(this->quad, true);
-      //glColor3f(0.5,0.8,0.9);
+      glColor4f(1.0,1.0,1.0,1.0);
       gluSphere(this->quad, this->size, 100, 100);
-  glPopMatrix();
+      glPopMatrix();
+}
+
+GLfloat Sky::getSize()
+{
+    return size;
 }

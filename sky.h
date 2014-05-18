@@ -13,13 +13,14 @@ class Sky : public AbstractEngineObject
   Q_OBJECT
 
 public:
-  Sky();
+  Sky(GLfloat size);
   virtual bool hasTexture();
   virtual QString getTexturePath();
   virtual void render();
+  GLfloat getSize();
 
 private:
-  GLint size;
+  GLfloat size;
   GLUquadric *quad;
 
 signals:

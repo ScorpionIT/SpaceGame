@@ -1,9 +1,11 @@
 #include "abstractengineobject.h"
 
-AbstractEngineObject::AbstractEngineObject(QObject *parent) :
-    QObject(parent)
+AbstractEngineObject::AbstractEngineObject(GLfloat x,GLfloat y,GLfloat z)
 {
+    setPosition(x,y,z);
 }
+
+
 
 bool AbstractEngineObject::hasTexture()
 {
