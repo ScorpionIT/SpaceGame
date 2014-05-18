@@ -99,6 +99,11 @@ void GameEngine::paintGL()
   swapBuffers();
 }
 
+void GameEngine::setCamera (Camera* camera)
+{
+  this->camera = camera;
+}
+
 GLuint GameEngine::loadTexture(QString imgPath)
 {
   QImage im;
