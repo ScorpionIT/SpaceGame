@@ -19,9 +19,6 @@ public:
   virtual void render();
 
 private:
-  GLfloat x;
-  GLfloat y;
-  GLfloat z;
   GLint size;
   GLUquadric *quad;
 

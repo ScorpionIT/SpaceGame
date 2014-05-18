@@ -1,4 +1,3 @@
-
 #include <QApplication>
 #include "gameengine.h"
 #include "camera.h"

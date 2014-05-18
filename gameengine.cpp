@@ -29,14 +29,6 @@ GameEngine::GameEngine(Camera *camera)
     spotDir0[1] = 0.0;
     spotDir0[2] = -0.0;
 
-    /*CameraEye[0] = 0;
-    CameraEye[1] = -15;
-    CameraEye[2] = 5;
-
-    CameraForward[0] = 0;
-    CameraForward[1] = 0;
-    CameraForward[2] = 0;*/
-
     objs = new QList<AbstractEngineObject*>;
 }
 
@@ -91,6 +83,7 @@ void GameEngine::paintGL()
 
       for (QList<AbstractEngineObject*>::iterator i = objs->begin(); i != objs->end(); i++)
       {
+          glTranslatef((*i)->getPositionX(), (*i)->getPositionY(), (*i)->getPositionZ());
           if ((*i)->hasTexture())
           {
               GLuint textureId = loadTexture ( (*i)->getTexturePath() );

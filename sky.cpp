@@ -3,9 +3,7 @@
 Sky::Sky()
 {
   quad = gluNewQuadric();
-  this->x=0;
-  this->y=0;
-  this->z=0;
+  setPosition(0, 0, 0);
   this->size=100;
 }
 
