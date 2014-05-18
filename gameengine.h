@@ -20,7 +20,8 @@ class GameEngine: public QGLWidget
 
 public:
 
-    GameEngine(Camera *camera);
+    GameEngine(Camera* camera);
+    void setCamera (Camera* camera);
     GLuint loadTexture(QString imgPath);
     void addObject (AbstractEngineObject *obj);
 
