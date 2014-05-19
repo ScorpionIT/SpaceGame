@@ -5,7 +5,8 @@ HEADERS += \
     keymanager.h \
     camera.h \
     checkpoint.h \
-    meteorite.h
+    meteorite.h \
+    gameminecrisis.h
 
 SOURCES += \
     gameengine.cpp \
@@ -15,7 +16,8 @@ SOURCES += \
     keymanager.cpp \
     camera.cpp \
     checkpoint.cpp \
-    meteorite.cpp
+    meteorite.cpp \
+    gameminecrisis.cpp
 
 LIBS += -lGLU -lglut
 
