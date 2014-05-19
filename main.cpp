@@ -1,11 +1,14 @@
 #include <QApplication>
 #include <QVector>
 #include <QTime>
+#include <QDebug>
+
 #include "gameengine.h"
 #include "camera.h"
 #include "sky.h"
+#include "player.h"
 #include "checkpoint.h"
-#include <QDebug>
+
 
 void addRandomCheckpoints(GameEngine* gm,int numberOfCheckpoint);
 bool isThereACheckpoint(GLdouble px,GLdouble py,GLdouble pz,QVector<Checkpoint*>& checkpoints);
@@ -14,13 +17,19 @@ int main(int argc,char** argv)
     QApplication game(argc,argv);
     const int NUMBER_OF_CHECKPOINT=20;
 
-    Camera *camera = new Camera(0, -15, 0, 0, 0, 0);
-    Sky *sky = new Sky(NUMBER_OF_CHECKPOINT*Checkpoint::DISTANCE+Checkpoint::SIZE);
+    Camera* camera = new Camera(0, -200, 0, 0, 0, 0);
+    //Sky* sky = new Sky(NUMBER_OF_CHECKPOINT*Checkpoint::DISTANCE+Checkpoint::SIZE);
+    Sky* sky = new Sky(100);
     GameEngine* gm = new GameEngine(camera,sky->getSize()*100);
-    gm->addObject (sky);
-    addRandomCheckpoints(gm,NUMBER_OF_CHECKPOINT);
-    gm->resize (800, 600);
+    Player* player = new Player();
+
+    gm->addObject(sky);
+    gm->addObject(player);
+    //addRandomCheckpoints(gm,NUMBER_OF_CHECKPOINT);
+    gm->resize(800, 600);
+
     gm->show();
+    gm->updateGL();
 
     return game.exec();
 }

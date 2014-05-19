@@ -1,22 +1,26 @@
 HEADERS += \
     gameengine.h \
     sky.h \
-    abstractengineobject.h \
     keymanager.h \
     camera.h \
-    checkpoint.h
+    checkpoint.h \
+    player.h \
+    engineobject.h \
+    glm/glm.h \
+    modelloader.h
 
 SOURCES += \
     gameengine.cpp \
     sky.cpp \
-    abstractengineobject.cpp \
     main.cpp \
     keymanager.cpp \
     camera.cpp \
-    checkpoint.cpp
+    checkpoint.cpp \
+    player.cpp \
+    engineobject.cpp \
+    modelloader.cpp
 
-LIBS += -lGLU -lglut
+LIBS += -L./glm -lGLU -lglut -lglm
 
 QT += opengl
 
-OTHER_FILES += /home/alessandro/Desktop/Unical/Informatica Grafica/QtProgetto/sky.bmp

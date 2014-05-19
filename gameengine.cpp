@@ -1,8 +1,10 @@
 #include "gameengine.h"
 #include <QDebug>
 
-GameEngine::GameEngine(Camera *camera,GLdouble viewVolume_):viewVolume(viewVolume_)
+GameEngine::GameEngine(Camera *camera, GLdouble viewVolume_):
+    QGLWidget(QGLFormat(QGL::DoubleBuffer)), viewVolume(viewVolume_)
 {
+    //setFormat(QGL::DoubleBuffer | QGL::Rgba);
     this->camera = camera;
 
     ambientLight[0] = 0.5;
@@ -29,12 +31,13 @@ GameEngine::GameEngine(Camera *camera,GLdouble viewVolume_):viewVolume(viewVolum
     spotDir0[1] = 0.0;
     spotDir0[2] = -0.0;
 
-    objs = new QList<AbstractEngineObject*>;
+    objs = new QList<EngineObject*>;
+
+    makeCurrent();
 }
 
 void GameEngine::initializeGL()
 {
-
     glShadeModel(GL_SMOOTH);
     glEnable(GL_DEPTH_TEST);
 
@@ -43,7 +46,7 @@ void GameEngine::initializeGL()
     glLightfv(GL_LIGHT0,GL_DIFFUSE,ambientLight);
     glLightfv(GL_LIGHT0,GL_SPECULAR,specular);
     glLightfv(GL_LIGHT0,GL_POSITION,lightPos0);
-//	glLightf(GL_LIGHT0,GL_SPOT_CUTOFF,30.0f);
+    //	glLightf(GL_LIGHT0,GL_SPOT_CUTOFF,30.0f);
     glEnable(GL_LIGHT0);
 
     glEnable(GL_COLOR_MATERIAL);
@@ -51,14 +54,44 @@ void GameEngine::initializeGL()
     glMaterialfv(GL_FRONT, GL_SPECULAR,specref);
     glMateriali(GL_FRONT, GL_SHININESS,1);
 
-    glEnable(GL_TEXTURE_2D);
+
 
     glEnable(GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     //createRandomCheckpoint();
 
-    glClearColor (1.0, 1.0, 1.0, 0.0);
+    glClearColor (0.0, 0.0, 0.0, 0.0);
+
+
+}
+
+void GameEngine::paintGL()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glLoadIdentity();
+
+    camera->render();
+
+    glPushMatrix();
+
+    for (QList<EngineObject*>::iterator obj = objs->begin(); obj != objs->end(); obj++)
+    {
+        if ((*obj)->hasTexture())
+        {
+            glEnable(GL_TEXTURE_2D);
+            GLuint textureId = loadTexture ( (*obj)->getTexturePath() );
+            glBindTexture(GL_TEXTURE_2D, textureId);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        }
+        (*obj)->render();
+
+    }
+    glPopMatrix();
+
+    swapBuffers();
 }
 
 void GameEngine::resizeGL(int w, int h)
@@ -71,65 +104,52 @@ void GameEngine::resizeGL(int w, int h)
     glLoadIdentity();
 }
 
-void GameEngine::paintGL()
-{
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  glPushMatrix();
-
-    camera->render();
-
-    glPushMatrix();
-
-      for (QList<AbstractEngineObject*>::iterator i = objs->begin(); i != objs->end(); i++)
-      {
-          glTranslatef((*i)->getPositionX(), (*i)->getPositionY(), (*i)->getPositionZ());
-          if ((*i)->hasTexture())
-          {
-              GLuint textureId = loadTexture ( (*i)->getTexturePath() );
-              glBindTexture(GL_TEXTURE_2D, textureId);
-          }
-          (*i)->render();
-      }
-
-    glPopMatrix();
-
-  glPopMatrix();
-
-  swapBuffers();
-}
-
 void GameEngine::setCamera (Camera* camera)
 {
-  this->camera = camera;
+    this->camera = camera;
+}
+
+void GameEngine::addObject (EngineObject *obj)
+{
+    objs->append(obj);
 }
 
 GLuint GameEngine::loadTexture(QString imgPath)
 {
-  QImage im;
-  im.load(imgPath);
-  QImage image = QGLWidget::convertToGLFormat (im);
-  if (image.isNull())
-    qDebug() << "Impossibile caricare la texture " << imgPath << endl;
-  GLuint textureId;
-  glGenTextures(1, &textureId); //Make room for our texture
-  glBindTexture(GL_TEXTURE_2D, textureId); //Tell OpenGL which texture to edit
-  //Map the image to the texture
-  glTexImage2D(GL_TEXTURE_2D,                //Always GL_TEXTURE_2D
-           0,                            //0 for now
-           GL_RGBA,                       //Format OpenGL uses for image
-           image.width(), image.height(),  //Width and height
-           0,                            //The border of the image
-           GL_RGBA, //GL_RGB, because pixels are stored in RGB format
-           GL_UNSIGNED_BYTE, //GL_UNSIGNED_BYTE, because pixels are stored
-                             //as unsigned numbers
-           image.bits());               //The actual pixel data
-  return textureId; //Returns the id of the texture
+    QImage im;
+    im.load(imgPath);
+    QImage image = QGLWidget::convertToGLFormat (im);
+    if (image.isNull())
+        qDebug() << "Impossibile caricare la texture " << imgPath << endl;
+    GLuint textureId;
+    glGenTextures(1, &textureId); //Make room for our texture
+    glBindTexture(GL_TEXTURE_2D, textureId); //Tell OpenGL which texture to edit
+    //Map the image to the texture
+    glTexImage2D(GL_TEXTURE_2D,                //Always GL_TEXTURE_2D
+                 0,                            //0 for now
+                 GL_RGBA,                       //Format OpenGL uses for image
+                 image.width(), image.height(),  //Width and height
+                 0,                            //The border of the image
+                 GL_RGBA, //GL_RGB, because pixels are stored in RGB format
+                 GL_UNSIGNED_BYTE, //GL_UNSIGNED_BYTE, because pixels are stored
+                 //as unsigned numbers
+                 image.bits());               //The actual pixel data
+    return textureId; //Returns the id of the texture
 }
 
-
-
-void GameEngine::addObject (AbstractEngineObject *obj)
+GLMmodel* GameEngine::loadModel (const char* modelPath)
 {
-  objs->append(obj);
+    GLMmodel* model = glmReadOBJ(modelPath);
+    if (!model)
+        qDebug() << "Impossibile caricare il modello " << modelPath << endl;
+
+    glmUnitize(model);
+    glmFacetNormals(model);
+    glmVertexNormals(model, 90.0, GL_TRUE);
+    return model;
+}
+
+void GameEngine::renderModel (GLMmodel* model)
+{
+    glmDraw(model, GLM_SMOOTH|GLM_TEXTURE|GLM_MATERIAL);
 }

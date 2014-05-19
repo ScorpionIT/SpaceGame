@@ -6,9 +6,9 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "abstractengineobject.h"
+#include "engineobject.h"
 
-class Sky : public AbstractEngineObject
+class Sky : public EngineObject
 {
   Q_OBJECT
 

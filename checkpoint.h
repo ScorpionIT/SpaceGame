@@ -1,10 +1,13 @@
 #ifndef CHECKPOINT_H
 #define CHECKPOINT_H
-#include "abstractengineobject.h"
+
+#include "engineobject.h"
 #include "GL/glu.h"
-class Checkpoint: public AbstractEngineObject
+
+class Checkpoint: public EngineObject
 {
     Q_OBJECT
+
 public:
     Checkpoint(GLfloat x,GLfloat y,GLfloat z);
     virtual void render();

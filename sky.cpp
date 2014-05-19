@@ -19,14 +19,11 @@ QString Sky::getTexturePath()
 
 void Sky::render()
 {
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glPushMatrix();
 
       gluQuadricTexture(this->quad, true);
       glColor4f(1.0,1.0,1.0,1.0);
       gluSphere(this->quad, this->size, 100, 100);
-      glPopMatrix();
+
 }
 
 GLfloat Sky::getSize()

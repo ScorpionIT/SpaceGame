@@ -6,33 +6,34 @@
 #include <QImage>
 #include <QTimer>
 #include <QList>
-
 #include <GL/glu.h>
 
-#include "abstractengineobject.h"
+#include "glm/glm.h"
+#include "engineobject.h"
 #include "camera.h"
 
 using namespace std;
 
 class GameEngine: public QGLWidget
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
 
     GameEngine(Camera* camera,GLdouble viewVolume);
     void setCamera (Camera* camera);
     GLuint loadTexture(QString imgPath);
-    void addObject (AbstractEngineObject *obj);
+    void addObject (EngineObject *obj);
+    static GLMmodel* loadModel (const char* modelPath);
+    static void renderModel (GLMmodel* model);
 
 protected:
     void initializeGL();
     void resizeGL(int w, int h);
-    void drawSky();
     void paintGL();
 
 private:
-    QList<AbstractEngineObject*> *objs;
+    QList<EngineObject*> *objs;
     Camera *camera;
     GLdouble viewVolume;
     GLfloat ambientLight[4];
@@ -40,6 +41,9 @@ private:
     GLfloat specref[4];
     GLfloat lightPos0[4];
     GLfloat  spotDir0[3];
+
+    GLMmodel* model;
+    int displayList;
 
 };
 
