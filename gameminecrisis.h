@@ -13,8 +13,10 @@ class GameMineCrisis
 public:
     GameMineCrisis(GameEngine* gameEngine,Sky* sky);
     bool isThereAnObject(GLdouble x, GLdouble y, GLdouble z, QVector<AbstractEngineObject *> &engineObject);
-    void addRandomCheckpoints(int numberOfCheckpoint);
-    void addRandomMeteorites(int numberOfMeteorite);
+    void addRandomCheckpoints();
+    void addRandomMeteorites();
+    static const int NUMBER_OF_CHECKPOINT=20;
+    static const int NUMBER_OF_METEORITE=100;
 private:
     GameEngine* gm;
     Sky* sky;

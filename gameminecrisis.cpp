@@ -16,7 +16,7 @@ bool GameMineCrisis::isThereAnObject(GLdouble x,GLdouble y,GLdouble z,QVector<Ab
     return false;
 }
 
-void GameMineCrisis::addRandomCheckpoints(int numberOfCheckpoint)
+void GameMineCrisis::addRandomCheckpoints()
 {
     qsrand(QDateTime::currentDateTime().toTime_t());
     QVector<AbstractEngineObject*> checkpoints;
@@ -25,7 +25,7 @@ void GameMineCrisis::addRandomCheckpoints(int numberOfCheckpoint)
         checkpoints.push_back(new Checkpoint(0,0,Checkpoint::DISTANCE));
         gm->addObject(checkpoints.back());
     }
-    for(int i=0;i<numberOfCheckpoint-1;i++)
+    for(int i=0;i<GameMineCrisis::NUMBER_OF_CHECKPOINT-1;i++)
     {
         GLint x,y,z;
         do
@@ -40,14 +40,14 @@ void GameMineCrisis::addRandomCheckpoints(int numberOfCheckpoint)
     qDebug()<<"Exit from creation of random checkpoints"<<endl;
 }
 
-void GameMineCrisis::addRandomMeteorites(int numberOfMeteorite)
+void GameMineCrisis::addRandomMeteorites()
 {
     QVector<AbstractEngineObject*> meteorites;
     qsrand(QDateTime::currentDateTime().toTime_t());
     GLfloat x,y,z;
     meteorites.push_back(new Meteorite(0,0,0));
     gm->addObject(meteorites.back());
-    while(numberOfMeteorite>=0)
+    for(int i=0;i<GameMineCrisis::NUMBER_OF_METEORITE;i++)
     {
         do
         {
@@ -57,7 +57,6 @@ void GameMineCrisis::addRandomMeteorites(int numberOfMeteorite)
         }while(isThereAnObject(x,y,z,meteorites));
         meteorites.push_back(new Meteorite(x,y,z));
         gm->addObject(meteorites.back());
-        numberOfMeteorite--;
     }
     qDebug()<<"Exit from creation of random meteorites"<<endl;
 
