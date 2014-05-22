@@ -31,7 +31,8 @@ GameEngine::GameEngine(Camera *camera, GLdouble viewVolume_):
     spotDir0[1] = 0.0;
     spotDir0[2] = -0.0;
 
-    objs = new QList<EngineObject*>;
+    objsToRenderAfterRenderCamera = new QList<EngineObject*>;
+    objsToRenderBeforeRenderCamera = new QList<EngineObject*>;
 
     makeCurrent();
 
@@ -65,15 +66,32 @@ void GameEngine::paintGL()
 {
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     glLoadIdentity();
+    glPushMatrix();
 
+    for (QList<EngineObject*>::iterator obj = objsToRenderBeforeRenderCamera->begin(); obj != objsToRenderBeforeRenderCamera->end(); obj++)
+    {
+        if ((*obj)->hasTexture())
+        {
+            glEnable(GL_TEXTURE_2D);
+            GLuint textureId = loadTexture ( (*obj)->getTexturePath() );
+            glBindTexture(GL_TEXTURE_2D, textureId);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        }
+        (*obj)->render();
+        if ((*obj)->hasTexture())
+            glDisable (GL_TEXTURE_2D);
+
+    }
+    glPopMatrix();
     camera->render();
 
 
     glPushMatrix();
 
-    for (QList<EngineObject*>::iterator obj = objs->begin(); obj != objs->end(); obj++)
+    for (QList<EngineObject*>::iterator obj = objsToRenderAfterRenderCamera->begin(); obj != objsToRenderAfterRenderCamera->end(); obj++)
     {
         if ((*obj)->hasTexture())
         {
@@ -111,9 +129,9 @@ void GameEngine::setCamera (Camera* camera)
     this->camera = camera;
 }
 
-void GameEngine::addObject (EngineObject *obj)
+void GameEngine::addObjectToRenderAfterRenderCamera(EngineObject *obj)
 {
-    objs->append(obj);
+    objsToRenderAfterRenderCamera->append(obj);
 }
 
 GLuint GameEngine::loadTexture(QString imgPath)
@@ -138,5 +156,45 @@ GLuint GameEngine::loadTexture(QString imgPath)
                  image.bits());               //The actual pixel data
     gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, image.width() , image.height(), GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
     return textureId; //Returns the id of the texture*/
+}
+
+void GameEngine::keyPressEvent(QKeyEvent* event)
+{
+    if(event->key()==Qt::Key_Up)
+       emit keyPress ("UP");
+    if(event->key()==Qt::Key_Down)
+        emit keyPress ("DOWN");
+    if(event->key()==Qt::Key_Right)
+        emit keyPress ("RIGHT");
+    if(event->key()==Qt::Key_Left)
+        emit keyPress ("LEFT");
+
+    if(event->key()==Qt::Key_W)
+        emit keyPress ("W");
+    if(event->key()==Qt::Key_S)
+        emit keyPress ("S");
+}
+
+void GameEngine::keyReleaseEvent(QKeyEvent* event)
+{
+  if(event->key()==Qt::Key_Up)
+     emit keyRelease ("UP");
+  if(event->key()==Qt::Key_Down)
+      emit keyRelease ("DOWN");
+  if(event->key()==Qt::Key_Right)
+      emit keyRelease ("RIGHT");
+  if(event->key()==Qt::Key_Left)
+      emit keyRelease ("LEFT");
+
+  if(event->key()==Qt::Key_W)
+      emit keyRelease ("W");
+  if(event->key()==Qt::Key_S)
+      emit keyRelease ("S");
+}
+
+
+void GameEngine::addObjectToRenderBeforeRenderCamera(EngineObject *obj)
+{
+    objsToRenderBeforeRenderCamera->append(obj);
 }
 

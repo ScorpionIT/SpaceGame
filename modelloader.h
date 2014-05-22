@@ -13,10 +13,10 @@ public:
     void renderModel();
 
 protected:
-
+    obj_t *model;
 
 private:
-    obj_t *model;
+  //  obj_t *model;
 
 };
 

@@ -4,10 +4,8 @@
 #include "opengl.h"
 #include <QObject>
 #include <QString>
-
-
-
 #include "engineobject.h"
+#include <QTimer>
 
 class Sky : public EngineObject
 {
@@ -23,10 +21,12 @@ public:
 private:
   GLfloat size;
   GLUquadric *quad;
+  GLfloat rotationAngle;
 
 signals:
 
 public slots:
+  void rotate();
 
 };
 

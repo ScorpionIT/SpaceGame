@@ -1,7 +1,6 @@
 HEADERS += \
     gameengine.h \
     sky.h \
-    keymanager.h \
     camera.h \
     checkpoint.h \
     player.h \
@@ -10,13 +9,13 @@ HEADERS += \
     gameminecrisis.h \
     meteorite.h \
     gameminecrisis.h \
-    opengl.h
+    opengl.h \
+
 
 SOURCES += \
     gameengine.cpp \
     sky.cpp \
     main.cpp \
-    keymanager.cpp \
     checkpoint.cpp \
     player.cpp \
     engineobject.cpp \
@@ -25,7 +24,7 @@ SOURCES += \
     meteorite.cpp \
     camera.cpp
 
-LIBS += -lGLU -lglut
+LIBS += -L"./libObj/lib" -lobj -lGLU -lglut
 
 QT += opengl
 

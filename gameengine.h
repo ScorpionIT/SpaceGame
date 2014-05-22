@@ -7,7 +7,7 @@
 #include <QImage>
 #include <QTimer>
 #include <QList>
-#include <glm.h>
+#include <QKeyEvent>
 
 #include "engineobject.h"
 #include "camera.h"
@@ -17,22 +17,28 @@ using namespace std;
 class GameEngine: public QGLWidget
 {
     Q_OBJECT
-
+signals:
+  void keyPress (QString key);
+  void keyRelease (QString key);
 public:
 
     GameEngine(Camera* camera,GLdouble viewVolume);
     void setCamera (Camera* camera);
     GLuint loadTexture(QString imgPath);
-    void addObject (EngineObject *obj);
+    void addObjectToRenderAfterRenderCamera (EngineObject *obj);
+    void addObjectToRenderBeforeRenderCamera (EngineObject *obj);
 
 protected:
     void initializeGL();
     void resizeGL(int w, int h);
     void paintGL();
+    void keyPressEvent(QKeyEvent* event);
+    void keyReleaseEvent(QKeyEvent* event);
+
 
 private:
-    GLMmodel* model;
-    QList<EngineObject*> *objs;
+    QList<EngineObject*> *objsToRenderAfterRenderCamera;
+    QList<EngineObject*> *objsToRenderBeforeRenderCamera;
     Camera *camera;
     GLdouble viewVolume;
     GLfloat ambientLight[4];

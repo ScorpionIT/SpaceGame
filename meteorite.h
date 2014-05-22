@@ -12,7 +12,8 @@ public:
     virtual void render();
     virtual GLfloat getSize();
     static const GLfloat SIZE=0.1;
-    void move(); //TODO
+    static const GLfloat SPEED_SATELLITE=1;
+    void move(GLfloat playerX ,GLfloat playerY,GLfloat playerZ);
 
 private:
     GLUquadric *quad;
