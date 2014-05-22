@@ -1,9 +1,9 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include "opengl.h"
 #include <QObject>
-#include <GL/gl.h>
-#include <GL/glu.h>
+
 
 class Camera : public QObject
 {

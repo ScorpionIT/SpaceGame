@@ -1,14 +1,14 @@
 #ifndef GAMEENGINE_H
 #define GAMEENGINE_H
 
+#include "opengl.h"
 #include <QGLWidget>
 #include <QKeyEvent>
 #include <QImage>
 #include <QTimer>
 #include <QList>
-#include <GL/glu.h>
+#include <glm.h>
 
-#include "glm/glm.h"
 #include "engineobject.h"
 #include "camera.h"
 
@@ -24,8 +24,6 @@ public:
     void setCamera (Camera* camera);
     GLuint loadTexture(QString imgPath);
     void addObject (EngineObject *obj);
-    static GLMmodel* loadModel (const char* modelPath);
-    static void renderModel (GLMmodel* model);
 
 protected:
     void initializeGL();
@@ -33,6 +31,7 @@ protected:
     void paintGL();
 
 private:
+    GLMmodel* model;
     QList<EngineObject*> *objs;
     Camera *camera;
     GLdouble viewVolume;
@@ -41,10 +40,6 @@ private:
     GLfloat specref[4];
     GLfloat lightPos0[4];
     GLfloat  spotDir0[3];
-
-    GLMmodel* model;
-    int displayList;
-
 };
 
 #endif // GAMEENGINE_H

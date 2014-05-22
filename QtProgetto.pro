@@ -6,21 +6,28 @@ HEADERS += \
     checkpoint.h \
     player.h \
     engineobject.h \
-    glm/glm.h \
-    modelloader.h
+    modelloader.h \
+    gameminecrisis.h \
+    meteorite.h \
+    gameminecrisis.h \
+    opengl.h
 
 SOURCES += \
     gameengine.cpp \
     sky.cpp \
     main.cpp \
     keymanager.cpp \
-    camera.cpp \
     checkpoint.cpp \
     player.cpp \
     engineobject.cpp \
-    modelloader.cpp
+    modelloader.cpp \
+    gameminecrisis.cpp \
+    meteorite.cpp \
+    camera.cpp
 
-LIBS += -L./glm -lGLU -lglut -lglm
+LIBS += -lGLU -lglut
 
 QT += opengl
+
+OTHER_FILES +=
 

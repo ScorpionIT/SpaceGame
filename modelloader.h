@@ -1,26 +1,22 @@
 #ifndef MODELLOADER_H
 #define MODELLOADER_H
 
+#include "opengl.h"
 #include <QObject>
-#include <QString>
-#include "glm/glm.h"
+#include "libObj/include/object.h"
 
 class ModelLoader : public QObject
 {
-    Q_OBJECT
-public:
-    ModelLoader(QObject *parent);
-    ModelLoader(const char *modelPath);
 
-    void loadModel (const char *modelPath);
-    void renderModel ();
+public:
+    ModelLoader(char *modelPath);
+    void renderModel();
+
+protected:
+
 
 private:
-    GLMmodel* model;
-
-signals:
-
-public slots:
+    obj_t *model;
 
 };
 

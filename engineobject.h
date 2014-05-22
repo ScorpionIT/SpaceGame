@@ -1,8 +1,9 @@
 #ifndef ENGINEOBJECT_H
 #define ENGINEOBJECT_H
 
+#include "opengl.h"
 #include <QObject>
-#include <GL/gl.h>
+
 
 class EngineObject : public QObject
 {
@@ -16,6 +17,8 @@ public:
     virtual GLfloat getPositionZ();
     virtual void setPosition (GLfloat x, GLfloat y, GLfloat z);
     virtual void render() = 0;
+    virtual GLfloat getSize()=0;
+
 
 private:
     GLfloat positionX;

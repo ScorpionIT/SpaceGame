@@ -34,6 +34,7 @@ GameEngine::GameEngine(Camera *camera, GLdouble viewVolume_):
     objs = new QList<EngineObject*>;
 
     makeCurrent();
+
 }
 
 void GameEngine::initializeGL()
@@ -54,25 +55,21 @@ void GameEngine::initializeGL()
     glMaterialfv(GL_FRONT, GL_SPECULAR,specref);
     glMateriali(GL_FRONT, GL_SHININESS,1);
 
-
-
     glEnable(GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    //createRandomCheckpoint();
-
     glClearColor (0.0, 0.0, 0.0, 0.0);
-
-
 }
 
 void GameEngine::paintGL()
 {
+    glClearColor (0.0, 0.0, 0.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
 
     camera->render();
+
 
     glPushMatrix();
 
@@ -83,13 +80,18 @@ void GameEngine::paintGL()
             glEnable(GL_TEXTURE_2D);
             GLuint textureId = loadTexture ( (*obj)->getTexturePath() );
             glBindTexture(GL_TEXTURE_2D, textureId);
+
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         }
         (*obj)->render();
+        if ((*obj)->hasTexture())
+            glDisable (GL_TEXTURE_2D);
 
     }
+
     glPopMatrix();
+
 
     swapBuffers();
 }
@@ -134,22 +136,7 @@ GLuint GameEngine::loadTexture(QString imgPath)
                  GL_UNSIGNED_BYTE, //GL_UNSIGNED_BYTE, because pixels are stored
                  //as unsigned numbers
                  image.bits());               //The actual pixel data
-    return textureId; //Returns the id of the texture
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, image.width() , image.height(), GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
+    return textureId; //Returns the id of the texture*/
 }
 
-GLMmodel* GameEngine::loadModel (const char* modelPath)
-{
-    GLMmodel* model = glmReadOBJ(modelPath);
-    if (!model)
-        qDebug() << "Impossibile caricare il modello " << modelPath << endl;
-
-    glmUnitize(model);
-    glmFacetNormals(model);
-    glmVertexNormals(model, 90.0, GL_TRUE);
-    return model;
-}
-
-void GameEngine::renderModel (GLMmodel* model)
-{
-    glmDraw(model, GLM_SMOOTH|GLM_TEXTURE|GLM_MATERIAL);
-}

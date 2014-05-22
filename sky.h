@@ -1,10 +1,11 @@
 #ifndef SKY_H
 #define SKY_H
 
+#include "opengl.h"
 #include <QObject>
 #include <QString>
-#include <GL/gl.h>
-#include <GL/glu.h>
+
+
 
 #include "engineobject.h"
 
@@ -17,7 +18,7 @@ public:
   virtual bool hasTexture();
   virtual QString getTexturePath();
   virtual void render();
-  GLfloat getSize();
+  virtual GLfloat getSize();
 
 private:
   GLfloat size;

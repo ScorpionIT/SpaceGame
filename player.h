@@ -2,8 +2,7 @@
 #define PLAYER_H
 
 #include "engineobject.h"
-#include "gameengine.h"
-//#include "modelloader.h"
+#include "modelloader.h"
 
 class Player : public EngineObject
 {
@@ -11,11 +10,14 @@ class Player : public EngineObject
 
 public:
     Player();
+    virtual bool hasTexture();
+    virtual QString getTexturePath();
     virtual void render();
+    virtual GLfloat getSize();
 
 private:
-    //ModelLoader* playerObj;
-    GLMmodel* model;
+    ModelLoader* model;
+
 
 signals:
 

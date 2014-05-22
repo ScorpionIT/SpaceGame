@@ -1,20 +1,31 @@
 #include "player.h"
 
-#include "gameengine.h"
-
 Player::Player()
 {
     setPosition(0,0,0);
-    model = GameEngine::loadModel("data/obj/snail/snail.obj");
+    model = new ModelLoader("data/obj/snail/snail.obj");
+}
+
+bool Player::hasTexture()
+{
+    return false;
+}
+
+QString Player::getTexturePath()
+{
+  //return QString ("data/model/snail/snail_tex_red.png");
+  return QString ("data/model/MP5K/Tex_0004_1.bmp");
 }
 
 void Player::render()
 {
-    //playerObj = new ModelLoader ("data/obj/snail/snail.obj");
-  /*glRotated (100,1,0,0);
-  glRotated (90,0,1,0);*/
+    glRotated (90, 0, 0, 1);
+    glRotated (90, 1, 0, 0);
+    //glScaled();
+    model->renderModel();
+}
 
-  //playerObj->renderModel();
-    model = GameEngine::loadModel("data/obj/snail/snail.obj");
-    GameEngine::renderModel(model);
+GLfloat Player::getSize()
+{
+    return 0;
 }

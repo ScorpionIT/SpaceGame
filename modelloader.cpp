@@ -1,30 +1,14 @@
 #include "modelloader.h"
-
 #include <QDebug>
 
-ModelLoader::ModelLoader(QObject *parent) :
-    QObject(parent)
+ModelLoader::ModelLoader(char *modelPath)
 {
-
+   model = newobj();
+   int ret = parse_obj(modelPath, model); //Controllare valore ritorno
+   qDebug() << ret << endl;
 }
 
-ModelLoader::ModelLoader(const char* modelPath)
+void ModelLoader::renderModel()
 {
-    loadModel(modelPath);
-}
-
-void ModelLoader::loadModel (const char* modelPath)
-{
-    model = glmReadOBJ(modelPath);
-    if (!model)
-        qDebug() << "Impossibile caricare il modello " << modelPath << endl;
-
-    glmUnitize(model);
-    glmFacetNormals(model);
-    glmVertexNormals(model, 90.0, GL_TRUE);
-}
-
-void ModelLoader::renderModel ()
-{
-    glmDraw(model, GLM_SMOOTH|GLM_TEXTURE|GLM_MATERIAL);
+    glRenderObj(model);
 }
