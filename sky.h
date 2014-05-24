@@ -17,11 +17,13 @@ public:
   virtual QString getTexturePath();
   virtual void render();
   virtual GLfloat getSize();
+  void stop();
 
 private:
   GLfloat size;
   GLUquadric *quad;
   GLfloat rotationAngle;
+  QTimer *timer;
 
 signals:
 

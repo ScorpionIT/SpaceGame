@@ -1,8 +1,9 @@
 #include "engineobject.h"
 
-EngineObject::EngineObject(GLfloat x,GLfloat y,GLfloat z)
+EngineObject::EngineObject(GLfloat x,GLfloat y,GLfloat z,bool alive_)
 {
     setPosition(x,y,z);
+    alive=alive_;
 }
 
 bool EngineObject::hasTexture()
@@ -35,4 +36,14 @@ void EngineObject::setPosition (GLfloat x, GLfloat y, GLfloat z)
     this->positionX = x;
     this->positionY = y;
     this->positionZ = z;
+}
+
+void EngineObject::setAlive(bool alive_)
+{
+    alive=alive_;
+}
+
+bool EngineObject::isAlive()
+{
+    return alive;
 }

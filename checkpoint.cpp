@@ -8,15 +8,27 @@ Checkpoint::Checkpoint(GLfloat x_, GLfloat y_, GLfloat z_,bool active_) :
 }
 void Checkpoint::render()
 {
-    glPushMatrix();
+    glTranslatef(getPositionX(),getPositionY(),getPositionZ());
+    quad = gluNewQuadric();
     glColor4f(0.5,0.5,0.0,1.0);
-    gluSphere(this->quad, Checkpoint::SIZE, 30, 30);
-    glPopMatrix();
+    if(!active)
+    {
+        gluQuadricDrawStyle(quad, GLU_LINE);
+        gluSphere(this->quad, Checkpoint::SIZE, 7, 7);
+    }
+    else
+        gluSphere(this->quad, Checkpoint::SIZE, 30, 30);
+    gluDeleteQuadric(quad);
 }
 
 GLfloat Checkpoint::getSize()
 {
     return SIZE;
+}
+
+void Checkpoint::setActive(bool active_)
+{
+    active=active_;
 }
 
 

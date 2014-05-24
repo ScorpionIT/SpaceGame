@@ -8,10 +8,10 @@ Meteorite::Meteorite(GLfloat x_, GLfloat y_, GLfloat z_) :
 
 void Meteorite::render()
 {
-    glPushMatrix();
+    glTranslatef(getPositionX(),getPositionY(),getPositionZ());
+    glClear(GL_COLOR);
     glColor4f(1.0,0.0,0.0,1.0);
     gluSphere(this->quad, Meteorite::SIZE, 30, 30);
-    glPopMatrix();
 }
 
 GLfloat Meteorite::getSize()
@@ -19,19 +19,25 @@ GLfloat Meteorite::getSize()
     return Meteorite::SIZE;
 }
 
-void Meteorite::move(GLfloat playerX ,GLfloat playerY,GLfloat playerZ)
+bool Meteorite::hit(GLfloat playerX ,GLfloat playerY,GLfloat playerZ)
 {
+    GLfloat x=getPositionX();
+    GLfloat y=getPositionY();
+    GLfloat z=getPositionZ();
     if(getPositionX()<playerX)
-        playerX+=SPEED_SATELLITE;
+        x+=SPEED_SATELLITE;
     else
-        playerX-=SPEED_SATELLITE;
+        x-=SPEED_SATELLITE;
     if(getPositionY()<playerY)
-        playerY+=SPEED_SATELLITE;
+        y+=SPEED_SATELLITE;
     else
-        playerY-=SPEED_SATELLITE;
+        y-=SPEED_SATELLITE;
     if(getPositionZ()<playerZ)
-        playerZ+=SPEED_SATELLITE;
+        z+=SPEED_SATELLITE;
     else
-        playerZ-=SPEED_SATELLITE;
-    setPosition(playerX,playerY,playerZ);
+        z-=SPEED_SATELLITE;
+    setPosition(x,y,z);
+    if((int)x==(int)playerX && (int)y==(int)playerY && (int)z==(int)playerZ)
+        return true;
+    return false;
 }

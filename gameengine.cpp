@@ -71,18 +71,23 @@ void GameEngine::paintGL()
 
     for (QList<EngineObject*>::iterator obj = objsToRenderBeforeRenderCamera->begin(); obj != objsToRenderBeforeRenderCamera->end(); obj++)
     {
-        if ((*obj)->hasTexture())
+        if((*obj)->isAlive())
         {
-            glEnable(GL_TEXTURE_2D);
-            GLuint textureId = loadTexture ( (*obj)->getTexturePath() );
-            glBindTexture(GL_TEXTURE_2D, textureId);
+            if ((*obj)->hasTexture())
+            {
+                glEnable(GL_TEXTURE_2D);
+                GLuint textureId = loadTexture ( (*obj)->getTexturePath() );
+                glBindTexture(GL_TEXTURE_2D, textureId);
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            }
+            glPushMatrix();
+            (*obj)->render();
+            glPopMatrix();
+            if ((*obj)->hasTexture())
+                glDisable (GL_TEXTURE_2D);
         }
-        (*obj)->render();
-        if ((*obj)->hasTexture())
-            glDisable (GL_TEXTURE_2D);
 
     }
     glPopMatrix();
@@ -93,18 +98,23 @@ void GameEngine::paintGL()
 
     for (QList<EngineObject*>::iterator obj = objsToRenderAfterRenderCamera->begin(); obj != objsToRenderAfterRenderCamera->end(); obj++)
     {
-        if ((*obj)->hasTexture())
+        if((*obj)->isAlive())
         {
-            glEnable(GL_TEXTURE_2D);
-            GLuint textureId = loadTexture ( (*obj)->getTexturePath() );
-            glBindTexture(GL_TEXTURE_2D, textureId);
+            if ((*obj)->hasTexture())
+            {
+                glEnable(GL_TEXTURE_2D);
+                GLuint textureId = loadTexture ( (*obj)->getTexturePath() );
+                glBindTexture(GL_TEXTURE_2D, textureId);
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            }
+            glPushMatrix();
+            (*obj)->render();
+            glPopMatrix();
+            if ((*obj)->hasTexture())
+                glDisable (GL_TEXTURE_2D);
         }
-        (*obj)->render();
-        if ((*obj)->hasTexture())
-            glDisable (GL_TEXTURE_2D);
 
     }
 
@@ -129,10 +139,6 @@ void GameEngine::setCamera (Camera* camera)
     this->camera = camera;
 }
 
-void GameEngine::addObjectToRenderAfterRenderCamera(EngineObject *obj)
-{
-    objsToRenderAfterRenderCamera->append(obj);
-}
 
 GLuint GameEngine::loadTexture(QString imgPath)
 {
@@ -161,7 +167,7 @@ GLuint GameEngine::loadTexture(QString imgPath)
 void GameEngine::keyPressEvent(QKeyEvent* event)
 {
     if(event->key()==Qt::Key_Up)
-       emit keyPress ("UP");
+        emit keyPress ("UP");
     if(event->key()==Qt::Key_Down)
         emit keyPress ("DOWN");
     if(event->key()==Qt::Key_Right)
@@ -177,19 +183,19 @@ void GameEngine::keyPressEvent(QKeyEvent* event)
 
 void GameEngine::keyReleaseEvent(QKeyEvent* event)
 {
-  if(event->key()==Qt::Key_Up)
-     emit keyRelease ("UP");
-  if(event->key()==Qt::Key_Down)
-      emit keyRelease ("DOWN");
-  if(event->key()==Qt::Key_Right)
-      emit keyRelease ("RIGHT");
-  if(event->key()==Qt::Key_Left)
-      emit keyRelease ("LEFT");
+    if(event->key()==Qt::Key_Up)
+        emit keyRelease ("UP");
+    if(event->key()==Qt::Key_Down)
+        emit keyRelease ("DOWN");
+    if(event->key()==Qt::Key_Right)
+        emit keyRelease ("RIGHT");
+    if(event->key()==Qt::Key_Left)
+        emit keyRelease ("LEFT");
 
-  if(event->key()==Qt::Key_W)
-      emit keyRelease ("W");
-  if(event->key()==Qt::Key_S)
-      emit keyRelease ("S");
+    if(event->key()==Qt::Key_W)
+        emit keyRelease ("W");
+    if(event->key()==Qt::Key_S)
+        emit keyRelease ("S");
 }
 
 
@@ -198,3 +204,7 @@ void GameEngine::addObjectToRenderBeforeRenderCamera(EngineObject *obj)
     objsToRenderBeforeRenderCamera->append(obj);
 }
 
+void GameEngine::addObjectToRenderAfterRenderCamera(EngineObject *obj)
+{
+    objsToRenderAfterRenderCamera->append(obj);
+}
