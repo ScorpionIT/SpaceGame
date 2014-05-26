@@ -11,7 +11,7 @@ void Meteorite::render()
     glTranslatef(getPositionX(),getPositionY(),getPositionZ());
     glClear(GL_COLOR);
     glColor4f(1.0,0.0,0.0,1.0);
-    gluSphere(this->quad, Meteorite::SIZE, 30, 30);
+    gluSphere(this->quad, Meteorite::SIZE*2, 30, 30);
 }
 
 GLfloat Meteorite::getSize()

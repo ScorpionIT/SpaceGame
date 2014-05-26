@@ -68,7 +68,12 @@ void GameEngine::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
     glPushMatrix();
-
+   /* QPainter* painter=new QPainter(this);
+    painter->begin(this);
+    painter->beginNativePainting();
+    //painter->drawText(rect(), Qt::AlignCenter, "Qrrrrrrrrrrrrrt");
+    painter->endNativePainting();
+    painter->end();*/
     for (QList<EngineObject*>::iterator obj = objsToRenderBeforeRenderCamera->begin(); obj != objsToRenderBeforeRenderCamera->end(); obj++)
     {
         if((*obj)->isAlive())
@@ -83,7 +88,7 @@ void GameEngine::paintGL()
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             }
             glPushMatrix();
-            (*obj)->render();
+           (*obj)->render();
             glPopMatrix();
             if ((*obj)->hasTexture())
                 glDisable (GL_TEXTURE_2D);
@@ -197,6 +202,7 @@ void GameEngine::keyReleaseEvent(QKeyEvent* event)
     if(event->key()==Qt::Key_S)
         emit keyRelease ("S");
 }
+
 
 
 void GameEngine::addObjectToRenderBeforeRenderCamera(EngineObject *obj)

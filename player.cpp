@@ -1,7 +1,7 @@
 #include "player.h"
 #include <QDebug>
 
-Player::Player(Camera *camera_,GameEngine* gm_,Sky* sky_):MAX_SPEED(10),MIN_SPEED(0)
+Player::Player(Camera *camera_,GameEngine* gm_,Sky* sky_):MAX_SPEED(5),MIN_SPEED(0)
 {
     gm=gm_;
     sky=sky_;
@@ -182,9 +182,9 @@ void Player::moveOn(QString key)
     if(key == "LEFT")
         seeLeft=true;
     if(key== "W")
-        incrementShift=false;
+        incrementShift=true;
     if(key== "S")
-        decrementShift=false;
+        decrementShift=true;
 }
 
 void Player::moveOff(QString key)

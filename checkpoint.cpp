@@ -14,10 +14,10 @@ void Checkpoint::render()
     if(!active)
     {
         gluQuadricDrawStyle(quad, GLU_LINE);
-        gluSphere(this->quad, Checkpoint::SIZE, 7, 7);
+        gluSphere(this->quad, Checkpoint::SIZE*2, 7, 7);
     }
     else
-        gluSphere(this->quad, Checkpoint::SIZE, 30, 30);
+        gluSphere(this->quad, Checkpoint::SIZE*2, 30, 30);
     gluDeleteQuadric(quad);
 }
 

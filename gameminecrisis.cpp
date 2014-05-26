@@ -2,19 +2,21 @@
 
 GameMineCrisis::GameMineCrisis()
 {
-    camera = new Camera(0, -15, 5,1,-15,+5);
-    sky = new Sky(GameMineCrisis::NUMBER_OF_CHECKPOINT*Checkpoint::DISTANCE+Checkpoint::SIZE);
+    camera = new Camera(0, -15, 5,1,-15,5);
+    sky = new Sky(GameMineCrisis::NUMBER_OF_CHECKPOINTS*Checkpoint::DISTANCE+Checkpoint::SIZE);
     gm = new GameEngine(camera,sky->getSize()*100);
     player = new Player(camera,gm,sky);
+    earth=new Earth(0,sky->getSize()*3,0,sky->getSize()) ;
     timerGame=10;
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
     timer->start(1);
-    numberOfcheckpoint=NUMBER_OF_CHECKPOINT;
+    numberOfcheckpoint=NUMBER_OF_CHECKPOINTS;
 }
 
 void GameMineCrisis::start()
 {
+    gm->addObjectToRenderAfterRenderCamera(earth);
     gm->addObjectToRenderBeforeRenderCamera(player);
     QObject::connect(gm, SIGNAL(keyPress(QString)),
                      player, SLOT(moveOn(QString)));
@@ -22,18 +24,43 @@ void GameMineCrisis::start()
                      player, SLOT(moveOff(QString)));
     addRandomMeteorites();
     addRandomCheckpoints();
+    addRandomObstacles();
     gm->addObjectToRenderAfterRenderCamera(sky);
     gm->resize (800, 600);
     gm->show();
     gm->updateGL();
 }
 
+void GameMineCrisis::addRandomObstacles()
+{
+    qsrand(QDateTime::currentDateTime().toTime_t());
+    GLfloat x,y,z;
+    obstacles.push_back(new Obstacle(100,20,40));
+    gm->addObjectToRenderAfterRenderCamera(obstacles.back());
+    for(int i=0;i<GameMineCrisis::NUMBER_OF_OBSTACLES-1;i++)
+    {
+        do
+        {
+            x=(qrand() % ((int)sky->getSize()/2)+Obstacle::SIZE)-(qrand() % ((int)sky->getSize()/2) +Obstacle::SIZE);
+            y=(qrand() % ((int)sky->getSize()/2)+Obstacle::SIZE)-(qrand() % ((int)sky->getSize()/2)+Obstacle::SIZE);
+            z=(qrand() % ((int)sky->getSize()/2)+Obstacle::SIZE)-(qrand() % ((int)sky->getSize()/2)+Obstacle::SIZE);
+        }while(isThereAnObject(x,y,z,obstacles)!=-1 && isThereAnObject(x,y,z,checkpoints)!=-1);
+        obstacles.push_back(new Obstacle(x,y,z));
+        gm->addObjectToRenderAfterRenderCamera(obstacles.back());
+    }
+    qDebug()<<"Exit from creation of random meteorites"<<endl;
+
+}
+
 
 
 int GameMineCrisis::isThereAnObject(GLdouble x, GLdouble y, GLdouble z, QVector<EngineObject *> &engineObject)
 {
-    for(int i=0;i<engineObject.size();i++)
+    /*for(int i=0;i<engineObject.size();i++)
         if(x>=engineObject[i]->getPositionX()-engineObject[i]->getSize()/2 && x<=engineObject[i]->getPositionX()+engineObject[i]->getSize()/2 && y>=engineObject[i]->getPositionY()-engineObject[i]->getSize()/2 && y<=engineObject[i]->getPositionY()+engineObject[i]->getSize()/2 && z>=engineObject[i]->getPositionZ()-engineObject[i]->getSize()/2 && z<=engineObject[i]->getPositionZ()+engineObject[i]->getSize()/2 )
+            return i;*/
+    for(int i=0;i<engineObject.size();i++)
+        if(x>=engineObject[i]->getPositionX()-(engineObject[i]->getSize()+15)/2 && x<=engineObject[i]->getPositionX()+(engineObject[i]->getSize()+15)/2 && y>=engineObject[i]->getPositionY()-(engineObject[i]->getSize()+15)/2 && y<=engineObject[i]->getPositionY()+(engineObject[i]->getSize()+15)/2 && z>=engineObject[i]->getPositionZ()-(engineObject[i]->getSize()+15)/2 && z<=engineObject[i]->getPositionZ()+(engineObject[i]->getSize()+15)/2 )
             return i;
     return -1;
 }
@@ -46,7 +73,7 @@ void GameMineCrisis::addRandomCheckpoints()
         checkpoints.push_back(new Checkpoint(Checkpoint::DISTANCE,0,0,true));
         gm->addObjectToRenderAfterRenderCamera(checkpoints.back());
     }
-    for(int i=0;i<GameMineCrisis::NUMBER_OF_CHECKPOINT-1;i++)
+    for(int i=0;i<GameMineCrisis::NUMBER_OF_CHECKPOINTS-1;i++)
     {
         GLint x,y,z;
         do
@@ -68,7 +95,7 @@ void GameMineCrisis::addRandomMeteorites()
     GLfloat x,y,z;
     meteorites.push_back(new Meteorite(0,0,0));
     gm->addObjectToRenderAfterRenderCamera(meteorites.back());
-    for(int i=0;i<GameMineCrisis::NUMBER_OF_METEORITE-1;i++)
+    for(int i=0;i<GameMineCrisis::NUMBER_OF_METEORITES-1;i++)
     {
         do
         {
@@ -88,6 +115,7 @@ void GameMineCrisis::gameOver()
     timer->stop();
     player->stop();
     sky->stop();
+
 }
 
 void GameMineCrisis::update()
@@ -102,6 +130,8 @@ void GameMineCrisis::update()
         }
     timerGame-=0.01;
     if(isThereAnObject(camera->getEyeX()+player->getShiftX()*20,camera->getEyeY()+player->getShiftY()*20,camera->getEyeZ()+player->getShiftZ()*20,meteorites)!=-1)
+        gameOver();
+    if(isThereAnObject(camera->getEyeX()+player->getShiftX()*20,camera->getEyeY()+player->getShiftY()*20,camera->getEyeZ()+player->getShiftZ()*20,obstacles)!=-1)
         gameOver();
     int indexOfObject=isThereAnObject(camera->getEyeX(),camera->getEyeY(),camera->getEyeZ(),checkpoints);
     if(indexOfObject!=-1)

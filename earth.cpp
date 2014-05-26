@@ -1,9 +1,9 @@
-#include "sky.h"
+#include "earth.h"
 
-Sky::Sky(GLfloat size_)
+Earth::Earth(GLfloat x,GLfloat y,GLfloat z,GLfloat size_)
 {
     quad = gluNewQuadric();
-    setPosition(0, 0, 0);
+    setPosition(x, y, z);
     this->size=size_;
     rotationAngle=0.0;
     timer = new QTimer(this);
@@ -11,36 +11,37 @@ Sky::Sky(GLfloat size_)
     timer->start(25);
 }
 
-bool Sky::hasTexture()
+bool Earth::hasTexture()
 {
     return true;
 }
 
-QString Sky::getTexturePath()
+QString Earth::getTexturePath()
 {
-    return QString ("data/texture/starmap.png");
+    return QString ("data/texture/earth.png");
 }
 
-void Sky::render()
+void Earth::render()
 {
     glTranslatef(getPositionX(),getPositionY(),getPositionZ());
     gluQuadricTexture(this->quad, true);
     glColor4f(1.0,1.0,1.0,1.0);
     glRotatef(rotationAngle,0,0,1);
-    gluSphere(this->quad, this->size*2, 10, 10);
+    gluSphere(this->quad, this->size*2, 50, 50);
+
 }
 
-GLfloat Sky::getSize()
+GLfloat Earth::getSize()
 {
     return size;
 }
 
-void Sky::stop()
+void Earth::stop()
 {
     timer->stop();
 }
 
-void Sky::rotate()
+void Earth::rotate()
 {
     rotationAngle+=0.3;
 }

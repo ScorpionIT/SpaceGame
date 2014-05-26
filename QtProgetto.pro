@@ -10,6 +10,8 @@ HEADERS += \
     meteorite.h \
     gameminecrisis.h \
     opengl.h \
+    earth.h \
+    obstacle.h
 
 
 SOURCES += \
@@ -22,7 +24,9 @@ SOURCES += \
     modelloader.cpp \
     gameminecrisis.cpp \
     meteorite.cpp \
-    camera.cpp
+    camera.cpp \
+    earth.cpp \
+    obstacle.cpp
 
 LIBS += -L"./libObj/lib" -lobj -lGLU -lglut
 
