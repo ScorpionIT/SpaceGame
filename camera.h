@@ -23,8 +23,6 @@ public:
   void setEye (GLfloat x, GLfloat y, GLfloat z);
   void setForward (GLfloat x, GLfloat y, GLfloat z);
 
-  void render();
-
 private:
   GLfloat eyeX;
   GLfloat eyeY;

@@ -1,12 +1,13 @@
 #include "player.h"
 #include <QDebug>
 
-Player::Player(Camera *camera_,GameEngine* gm_,Sky* sky_):MAX_SPEED(5),MIN_SPEED(0)
+Player::Player(GameEngine* gm, Camera *camera, Sky* sky) :
+    EngineObject (gm), MAX_SPEED(5),MIN_SPEED(0)
 {
-    gm=gm_;
-    sky=sky_;
-    model = new ModelLoader ("data/objs/f16.obj");
-    camera=camera_;
+    this->gm=gm;
+    this->sky=sky;
+    this-> camera=camera;
+
     seeLeft=false;
     seeRight=false;
     seeUp=false;
@@ -23,32 +24,31 @@ Player::Player(Camera *camera_,GameEngine* gm_,Sky* sky_):MAX_SPEED(5),MIN_SPEED
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(move()));
     timer->start(25);
+
     setPosition(camera->getEyeX(),camera->getEyeY(),camera->getEyeZ());
-}
-
-bool Player::hasTexture()
-{
-    return false;
-}
-
-QString Player::getTexturePath()
-{
-    //return QString ("data/model/snail/snail_tex_red.png");
-    return QString ("data/model/MP5K/Tex_0004_1.bmp");
+    gm->makeCurrent();
+    model = new Model ("data/obj/f16/f16.obj");
 }
 
 void Player::render()
 {
-    glTranslatef(-2,-5,-20);
-    glRotatef(180,0,1,0);
-    glRotatef(whingAngle,0,0,1);
-    model->renderModel();
+    gm->pushMatrix();
+    gm->enableTexture();
+    //gm->Translate(camera->getForwardX(),camera->getForwardY(),camera->getForwardZ());
+    gm->Translate(-2,-5,-20);
+    gm->Rotate(180,0,1,0);
+    gm->Rotate(whingAngle,0,0,1);
+    gm->drawModel(model);
+    gm->disableTexture();
+    gm->popMatrix();
+    //gm->setCamera(camera);
 }
 
 GLfloat Player::getSize()
 {
     return 0;
 }
+
 
 void Player::stop()
 {
@@ -165,7 +165,7 @@ void Player::move()
             }
         }
         setPosition(camera->getForwardX(),camera->getForwardY(),camera->getForwardZ());
-        gm->updateGL();
+        //gm->updateGL();
         //qDebug()<<camera->getEyeX()<<"   "<<camera->getEyeY()<<"    "<<camera->getEyeZ()<<endl;
     }
 
@@ -226,3 +226,4 @@ bool Player::isInsideSky(GLdouble px,GLdouble py,GLdouble pz)
         return true;
     return false;
 }
+

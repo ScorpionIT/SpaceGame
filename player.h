@@ -2,18 +2,16 @@
 #define PLAYER_H
 
 #include "engineobject.h"
-#include "modelloader.h"
 #include "camera.h"
 #include "gameengine.h"
 #include "sky.h"
 #include <cmath>
+
 class Player : public EngineObject
 {
     Q_OBJECT
 public:
-    Player(Camera* camera_,GameEngine* gm_,Sky* sky);
-    virtual bool hasTexture();
-    virtual QString getTexturePath();
+    Player(GameEngine* gm, Camera* camera, Sky* sky);
     virtual void render();
     virtual GLfloat getSize();
     void stop();
@@ -24,10 +22,9 @@ public:
 
 private:
     bool isInsideSky(GLdouble px,GLdouble py,GLdouble pz);
-    GameEngine* gm;
     Camera* camera;
     Sky* sky;
-    ModelLoader* model;
+    Model* model;
     bool seeLeft;
     bool seeRight;
     bool seeUp;

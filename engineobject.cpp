@@ -1,19 +1,8 @@
 #include "engineobject.h"
 
-EngineObject::EngineObject(GLfloat x,GLfloat y,GLfloat z,bool alive_)
+EngineObject::EngineObject(GameEngine* gm)
 {
-    setPosition(x,y,z);
-    alive=alive_;
-}
-
-bool EngineObject::hasTexture()
-{
-    return false;
-}
-
-QString EngineObject::getTexturePath()
-{
-    return QString();
+    this->gm = gm;
 }
 
 GLfloat EngineObject::getPositionX()
@@ -36,14 +25,4 @@ void EngineObject::setPosition (GLfloat x, GLfloat y, GLfloat z)
     this->positionX = x;
     this->positionY = y;
     this->positionZ = z;
-}
-
-void EngineObject::setAlive(bool alive_)
-{
-    alive=alive_;
-}
-
-bool EngineObject::isAlive()
-{
-    return alive;
 }

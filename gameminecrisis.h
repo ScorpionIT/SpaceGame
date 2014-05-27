@@ -16,8 +16,7 @@
 class GameMineCrisis:public QObject
 {
     Q_OBJECT
-public slots:
-    void update();
+
 public:
     GameMineCrisis();
     void start();
@@ -28,6 +27,7 @@ public:
     static const int NUMBER_OF_CHECKPOINTS=20;
     static const int NUMBER_OF_METEORITES=100;
     static const int NUMBER_OF_OBSTACLES=50;
+
 private:
     int isThereAnObject(GLdouble x, GLdouble y, GLdouble z, QVector<EngineObject *> &engineObject);
     GameEngine* gm;
@@ -40,7 +40,13 @@ private:
     QVector<EngineObject*> obstacles;
     GLfloat timerGame;
     QTimer *timer;
+    QTimer *timer_gameMainLoop;
     int numberOfcheckpoint;
+    bool gameover;
+
+public slots:
+    void gameMainLoop();
+    void update();
 };
 
 #endif // GAMEMINECRISIS_H

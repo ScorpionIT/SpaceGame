@@ -5,13 +5,12 @@ HEADERS += \
     checkpoint.h \
     player.h \
     engineobject.h \
-    modelloader.h \
     gameminecrisis.h \
     meteorite.h \
-    gameminecrisis.h \
     opengl.h \
     earth.h \
-    obstacle.h
+    obstacle.h \
+    model.h
 
 
 SOURCES += \
@@ -21,12 +20,12 @@ SOURCES += \
     checkpoint.cpp \
     player.cpp \
     engineobject.cpp \
-    modelloader.cpp \
     gameminecrisis.cpp \
     meteorite.cpp \
     camera.cpp \
     earth.cpp \
-    obstacle.cpp
+    obstacle.cpp \
+    model.cpp
 
 LIBS += -L"./libObj/lib" -lobj -lGLU -lglut
 

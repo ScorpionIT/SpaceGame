@@ -1,17 +1,21 @@
 #include "meteorite.h"
 
-Meteorite::Meteorite(GLfloat x_, GLfloat y_, GLfloat z_) :
-    EngineObject(x_,y_,z_)
+Meteorite::Meteorite(GameEngine* gm, GLfloat x, GLfloat y, GLfloat z) :
+    EngineObject(gm)
 {
+    setPosition(x,y,z);
     quad = gluNewQuadric();
 }
 
 void Meteorite::render()
 {
-    glTranslatef(getPositionX(),getPositionY(),getPositionZ());
-    glClear(GL_COLOR);
-    glColor4f(1.0,0.0,0.0,1.0);
-    gluSphere(this->quad, Meteorite::SIZE*2, 30, 30);
+    gm->pushMatrix();
+    gm->Translate(getPositionX(),getPositionY(),getPositionZ());
+    //glClear(GL_COLOR);
+    gm->setColor(1.0,0.0,0.0,1.0);
+    gm->drawSphere(gm->sphereSettings(false,false), Meteorite::SIZE*2, 30, 30);
+    gm->popMatrix();
+    //gluSphere(this->quad, Meteorite::SIZE*2, 30, 30);
 }
 
 GLfloat Meteorite::getSize()

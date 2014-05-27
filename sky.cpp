@@ -1,33 +1,29 @@
 #include "sky.h"
 
-Sky::Sky(GLfloat size_)
+Sky::Sky(GameEngine *gm, GLfloat size_) :
+    EngineObject (gm)
 {
-    quad = gluNewQuadric();
     setPosition(0, 0, 0);
     this->size=size_;
     rotationAngle=0.0;
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(rotate()));
     timer->start(25);
-}
-
-bool Sky::hasTexture()
-{
-    return true;
-}
-
-QString Sky::getTexturePath()
-{
-    return QString ("data/texture/starmap.png");
+    //gm->makeCurrent();
+    this->textureId = this->gm->loadTexture("data/texture/starmap.png");
 }
 
 void Sky::render()
 {
-    glTranslatef(getPositionX(),getPositionY(),getPositionZ());
-    gluQuadricTexture(this->quad, true);
-    glColor4f(1.0,1.0,1.0,1.0);
-    glRotatef(rotationAngle,0,0,1);
-    gluSphere(this->quad, this->size*2, 10, 10);
+    gm->pushMatrix();
+    gm->enableTexture();
+    gm->Translate(getPositionX(),getPositionY(),getPositionZ());
+    gm->setColor(1.0, 1.0, 1.0, 1.0);
+    gm->Rotate (rotationAngle,0,0,1);
+    gm->setTexture(textureId);
+    gm->drawSphere(gm->sphereSettings(true,false), this->size*3, 10, 10);
+    gm->disableTexture();
+    gm->popMatrix();
 }
 
 GLfloat Sky::getSize()

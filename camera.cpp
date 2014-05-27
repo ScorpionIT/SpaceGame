@@ -54,8 +54,3 @@ void Camera::setForward (GLfloat x, GLfloat y, GLfloat z)
   this->forwardY = y;
   this->forwardZ = z;
 }
-
-void Camera::render()
-{
-  gluLookAt(this->eyeX, this->eyeY, this->eyeZ, this->forwardX , this->forwardY , this->forwardZ, 0.0, 0.0,1.0);
-}

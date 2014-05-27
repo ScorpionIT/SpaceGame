@@ -31,10 +31,7 @@ GameEngine::GameEngine(Camera *camera, GLdouble viewVolume_):
     spotDir0[1] = 0.0;
     spotDir0[2] = -0.0;
 
-    objsToRenderAfterRenderCamera = new QList<EngineObject*>;
-    objsToRenderBeforeRenderCamera = new QList<EngineObject*>;
-
-    makeCurrent();
+    //makeCurrent();
 
 }
 
@@ -67,66 +64,6 @@ void GameEngine::paintGL()
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
-    glPushMatrix();
-   /* QPainter* painter=new QPainter(this);
-    painter->begin(this);
-    painter->beginNativePainting();
-    //painter->drawText(rect(), Qt::AlignCenter, "Qrrrrrrrrrrrrrt");
-    painter->endNativePainting();
-    painter->end();*/
-    for (QList<EngineObject*>::iterator obj = objsToRenderBeforeRenderCamera->begin(); obj != objsToRenderBeforeRenderCamera->end(); obj++)
-    {
-        if((*obj)->isAlive())
-        {
-            if ((*obj)->hasTexture())
-            {
-                glEnable(GL_TEXTURE_2D);
-                GLuint textureId = loadTexture ( (*obj)->getTexturePath() );
-                glBindTexture(GL_TEXTURE_2D, textureId);
-
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            }
-            glPushMatrix();
-           (*obj)->render();
-            glPopMatrix();
-            if ((*obj)->hasTexture())
-                glDisable (GL_TEXTURE_2D);
-        }
-
-    }
-    glPopMatrix();
-    camera->render();
-
-
-    glPushMatrix();
-
-    for (QList<EngineObject*>::iterator obj = objsToRenderAfterRenderCamera->begin(); obj != objsToRenderAfterRenderCamera->end(); obj++)
-    {
-        if((*obj)->isAlive())
-        {
-            if ((*obj)->hasTexture())
-            {
-                glEnable(GL_TEXTURE_2D);
-                GLuint textureId = loadTexture ( (*obj)->getTexturePath() );
-                glBindTexture(GL_TEXTURE_2D, textureId);
-
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            }
-            glPushMatrix();
-            (*obj)->render();
-            glPopMatrix();
-            if ((*obj)->hasTexture())
-                glDisable (GL_TEXTURE_2D);
-        }
-
-    }
-
-    glPopMatrix();
-
-
-    swapBuffers();
 }
 
 void GameEngine::resizeGL(int w, int h)
@@ -144,30 +81,14 @@ void GameEngine::setCamera (Camera* camera)
     this->camera = camera;
 }
 
-
-GLuint GameEngine::loadTexture(QString imgPath)
+void GameEngine::clean()
 {
-    QImage im;
-    im.load(imgPath);
-    QImage image = QGLWidget::convertToGLFormat (im);
-    if (image.isNull())
-        qDebug() << "Impossibile caricare la texture " << imgPath << endl;
-    GLuint textureId;
-    glGenTextures(1, &textureId); //Make room for our texture
-    glBindTexture(GL_TEXTURE_2D, textureId); //Tell OpenGL which texture to edit
-    //Map the image to the texture
-    glTexImage2D(GL_TEXTURE_2D,                //Always GL_TEXTURE_2D
-                 0,                            //0 for now
-                 GL_RGBA,                       //Format OpenGL uses for image
-                 image.width(), image.height(),  //Width and height
-                 0,                            //The border of the image
-                 GL_RGBA, //GL_RGB, because pixels are stored in RGB format
-                 GL_UNSIGNED_BYTE, //GL_UNSIGNED_BYTE, because pixels are stored
-                 //as unsigned numbers
-                 image.bits());               //The actual pixel data
-    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, image.width() , image.height(), GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
-    return textureId; //Returns the id of the texture*/
+    makeCurrent();
+    glClearColor (0.0, 0.0, 0.0, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
 }
+
 
 void GameEngine::keyPressEvent(QKeyEvent* event)
 {
@@ -203,14 +124,282 @@ void GameEngine::keyReleaseEvent(QKeyEvent* event)
         emit keyRelease ("S");
 }
 
-
-
-void GameEngine::addObjectToRenderBeforeRenderCamera(EngineObject *obj)
+void GameEngine::drawText (QString text, GLfloat x, GLfloat y, GLfloat z, QFont font)
 {
-    objsToRenderBeforeRenderCamera->append(obj);
+    glPushMatrix();
+    this->renderText (x, y, z, text, font);
+    glPopMatrix();
 }
 
-void GameEngine::addObjectToRenderAfterRenderCamera(EngineObject *obj)
+// OPENGL'S DRAWING BASE FUNCTIONS
+void GameEngine::pushMatrix()
 {
-    objsToRenderAfterRenderCamera->append(obj);
+    makeCurrent();
+    glPushMatrix();
+}
+
+void GameEngine::popMatrix()
+{
+    makeCurrent();
+    glPopMatrix();
+}
+
+void GameEngine::renderCamera()
+{
+    makeCurrent();
+    gluLookAt(camera->getEyeX(), camera->getEyeY(), camera->getEyeZ(),
+              camera->getForwardX(), camera->getForwardY(), camera->getForwardZ(), 0.0, 0.0, 1.0);
+}
+
+void GameEngine::Translate (GLfloat x, GLfloat y, GLfloat z)
+{
+    makeCurrent();
+    glTranslatef(x, y, z);
+}
+void GameEngine::Rotate (GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
+{
+    makeCurrent();
+    glRotatef (angle, x, y, z);
+}
+
+void GameEngine::setColor (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
+{
+    makeCurrent();
+    glColor4f(red, green, blue, alpha);
+}
+
+// GEOMETRIC PRIMITIVES
+GLUquadric* GameEngine::sphereSettings (GLboolean textured, GLboolean wired)
+{
+    GLUquadric *quad = gluNewQuadric();
+    if (textured)
+        gluQuadricTexture(quad,1);
+    if (wired)
+        gluQuadricDrawStyle(quad, GLU_LINE);
+    return quad;
+}
+
+void GameEngine::drawSphere(GLUquadric* settings, GLfloat size, GLint slices, GLint stacks)
+{
+    makeCurrent();
+    gluSphere(settings, size, slices, stacks);
+}
+
+void GameEngine::drawCube (GLfloat size)
+{
+    makeCurrent();
+    glBegin(GL_QUADS);
+    // Front Face
+    glVertex3f(size,size,size);
+
+    glVertex3f(size,-size,size);
+
+    glVertex3f(-size,-size,size);
+
+    glVertex3f(-size,size,size);
+
+
+    // Back Face
+    glVertex3f(size,size,-size);
+
+    glVertex3f(size,-size,-size);
+
+    glVertex3f(-size,-size,-size);
+
+    glVertex3f(-size,size,-size);
+
+    // Top Face
+    glVertex3f(size,size,-size);
+
+    glVertex3f(size,size,size);
+
+    glVertex3f(-size,size,size);
+
+    glVertex3f(-size,size,-size);
+
+    // Bottom Face
+    glVertex3f(size,-size,-size);
+
+    glVertex3f(size,-size,size);
+
+    glVertex3f(-size,-size,size);
+
+    glVertex3f(-size,-size,-size);
+
+    // Left face
+    glVertex3f(size,size,size);
+
+    glVertex3f(size,size,-size);
+
+    glVertex3f(size,-size,-size);
+
+    glVertex3f(size,-size,size);
+
+    // Right face
+    glVertex3f(-size,size,size);
+
+    glVertex3f(-size,size,-size);
+
+    glVertex3f(-size,-size,-size);
+
+    glVertex3f(-size,-size,size);
+    glEnd();
+}
+
+// MODEL FUNCTION
+//Model* GameEngine::loadModel (QString modelPath);
+void GameEngine::drawModel (Model* model)
+{
+    makeCurrent();
+    glRenderObj(model->getModel());
+}
+
+// TEXTURE FUNCITONS
+void GameEngine::enableTexture()
+{
+    makeCurrent();
+    glEnable(GL_TEXTURE_2D);
+}
+
+void GameEngine::disableTexture()
+{
+    makeCurrent();
+    glDisable(GL_TEXTURE_2D);
+}
+
+GLuint GameEngine::loadTexture(QString imgPath)
+{
+    makeCurrent();
+    QImage im;
+    im.load(imgPath);
+    QImage image = QGLWidget::convertToGLFormat (im);
+    if (image.isNull())
+        qDebug() << "Impossibile caricare la texture " << imgPath << endl;
+    GLuint textureId;
+    glGenTextures(1, &textureId); //Make room for our texture
+    glBindTexture(GL_TEXTURE_2D, textureId); //Tell OpenGL which texture to edit
+    //Map the image to the texture
+    glTexImage2D(GL_TEXTURE_2D,                //Always GL_TEXTURE_2D
+                 0,                            //0 for now
+                 GL_RGBA,                       //Format OpenGL uses for image
+                 image.width(), image.height(),  //Width and height
+                 0,                            //The border of the image
+                 GL_RGBA, //GL_RGB, because pixels are stored in RGB format
+                 GL_UNSIGNED_BYTE, //GL_UNSIGNED_BYTE, because pixels are stored
+                 //as unsigned numbers
+                 image.bits());               //The actual pixel data
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, image.width() , image.height(), GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
+    return textureId; //Returns the id of the texture*/
+}
+
+void GameEngine::setTexture(GLuint textureId)
+{
+    makeCurrent();
+    glBindTexture(GL_TEXTURE_2D, textureId);
+}
+
+// MODEL PRIVATE FUNCIOTN
+int GameEngine::QloadModeltexture(obj_t *obj, char *filename, texture *tex)
+{
+    char FullName[512];
+    tex = (texture*) malloc(sizeof(texture));
+    if(tex == NULL)
+    {
+        if(libobj_verbose)
+            fprintf(stderr, "libobj: Error: couldn't alloc memory for new texture\n");
+        return -1;
+    }
+    memset( tex, 0, sizeof(texture));         // zero out the new texture
+
+    // open the image
+    if(obj->dir != NULL)
+        sprintf(FullName, "%s%s", obj->dir, filename);
+    else
+        strcpy(FullName, filename);
+
+    QImage im;
+    im.load(FullName);
+    QImage image = QGLWidget::convertToGLFormat (im);
+    if (image.isNull())
+        fprintf (stderr, "Impossibile caricare la texture %s", FullName);
+    tex->w = image.width();
+    tex->h = image.height();
+    //fprintf (stderr, "Carico la Texture in memeria");
+    tex->img = (uint8_t*) malloc(image.byteCount());
+    memcpy (tex->img, image.bits(), image.byteCount());
+    //tex->img = image.bits();
+    //fprintf (stderr, "...OK\n");
+    return true;
+}
+
+void GameEngine::glRenderObj(obj_t *obj)
+{
+    makeCurrent();
+    texture tex;
+    int i, j, k;
+
+    for(i = 0; i < obj->materials_n; i++ )
+    {
+        tex.w = 1;
+        tex.h = 1;
+        tex.img = (uint8_t*) malloc(4);
+        tex.img_siz = 1;
+        if(obj->materials[i]->diffuse_tex != NULL)
+        {
+            if( QloadModeltexture(obj, obj->materials[i]->diffuse_tex, &tex) )
+                goto no_texture;
+        }
+        else
+        {
+no_texture:
+            tex.img[0] = (uint8_t)(255 * obj->materials[i]->diffuse.r);
+            tex.img[1] = (uint8_t)(255 * obj->materials[i]->diffuse.g);
+            tex.img[2] = (uint8_t)(255 * obj->materials[i]->diffuse.b);
+            tex.img[3] = (uint8_t)(255 * obj->materials[i]->alpha);
+        }
+        glBindTexture(GL_TEXTURE_2D, textures[i]);
+        //qDebug() << textures[i] << endl;
+        //        fprintf (stderr, "Carico la Texture");
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex.w, tex.h, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex.img);
+        //        fprintf (stderr, "...OK\n");
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
+        for(j = 0; j < obj->materials[i]->polygons_n; j++)
+        {
+            objpolygon *poly = obj->materials[i]->polygons[j];
+            for(k = 1; k+1 < poly->points_n; k++)
+            {
+                glBegin(GL_TRIANGLES); // could be moved outside of loop?
+#define p1	poly->points[0]
+#define p2	poly->points[k]
+#define p3	poly->points[k+1]
+                if(p1.texcoord != -1)
+                    glTexCoord2f( obj->texcoords[p1.texcoord].u, obj->texcoords[p1.texcoord].v );
+                if(p1.normal != -1)
+                    glNormal3f( obj->normals[p1.normal].a, obj->normals[p1.normal].b, obj->normals[p1.normal].c );
+                glVertex3f( obj->verts[p1.vertex].x, obj->verts[p1.vertex].y, obj->verts[p1.vertex].z );
+
+                if(p2.texcoord != -1)
+                    glTexCoord2f( obj->texcoords[p2.texcoord].u, obj->texcoords[p2.texcoord].v );
+                if(p2.normal != -1)
+                    glNormal3f( obj->normals[p2.normal].a, obj->normals[p2.normal].b, obj->normals[p2.normal].c );
+                glVertex3f( obj->verts[p2.vertex].x, obj->verts[p2.vertex].y, obj->verts[p2.vertex].z );
+
+                if(p3.texcoord != -1)
+                    glTexCoord2f( obj->texcoords[p3.texcoord].u, obj->texcoords[p3.texcoord].v );
+                if(p3.normal != -1)
+                    glNormal3f( obj->normals[p3.normal].a, obj->normals[p3.normal].b, obj->normals[p3.normal].c );
+                glVertex3f( obj->verts[p3.vertex].x, obj->verts[p3.vertex].y, obj->verts[p3.vertex].z );
+#undef p1
+#undef p2
+#undef p3
+                glEnd(); //could be moved outside of loop?
+            }
+        }
+        //free(tex.img);//this safe?
+    }
 }

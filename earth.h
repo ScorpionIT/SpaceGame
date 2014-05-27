@@ -1,25 +1,27 @@
 #ifndef EARTH_H
 #define EARTH_H
+
 #include "engineobject.h"
 #include <QTimer>
-#include<QObject>
-class Earth:public EngineObject
+
+class Earth : public EngineObject
 {
     Q_OBJECT
-public slots:
-  void rotate();
+
 public:
-    Earth(GLfloat x=0,GLfloat y=0,GLfloat z=0,GLfloat size=3);
-    void render();
-    bool hasTexture();
-    QString getTexturePath();
+    Earth(GameEngine* gm, GLfloat x=0, GLfloat y=0, GLfloat z=0, GLfloat size=3);
+    virtual void render();
     GLfloat getSize();
     void stop();
+
 private:
     GLfloat size;
-    GLUquadric *quad;
+    GLuint textureId;
     GLfloat rotationAngle;
     QTimer *timer;
+
+public slots:
+  void rotate();
 };
 
 #endif // EARTH_H

@@ -5,15 +5,15 @@
 #include <QObject>
 #include "libObj/include/object.h"
 
-class ModelLoader : public QObject
+class Model : public QObject
 {
 
 public:
-    ModelLoader(char *modelPath);
-    void renderModel();
+    Model(const char *modelPath);
+    obj_t* getModel();
 
 protected:
-    obj_t *model;
+    obj_t* model;
 
 private:
   //  obj_t *model;
