@@ -77,8 +77,8 @@ void GameMineCrisis::gameMainLoop()
     {
         QFont font;
         gm->setColor(1.0, 0, 0, 1);
-        font.setPixelSize(40);
-        gm->drawText(QString ("GAME OVER"), camera->getForwardX()-1, camera->getForwardY(), camera->getForwardZ(), font);
+        font.setPixelSize(1140);
+        gm->drawText(QString ("GAME OVER"), camera->getEyeX(), camera->getEyeY(), camera->getEyeZ(), font);
     }
 
     gm->swapBuffers();
@@ -125,6 +125,7 @@ void GameMineCrisis::addRandomCheckpoints()
     if(checkpoints.empty())
     {
         checkpoints.push_back(new Checkpoint(gm, Checkpoint::DISTANCE,0,0,true));
+
         //gm->addObjectToRenderAfterRenderCamera(checkpoints.back());
     }
     for(int i=0;i<GameMineCrisis::NUMBER_OF_CHECKPOINTS-1;i++)
@@ -173,21 +174,21 @@ void GameMineCrisis::gameOver()
 
 void GameMineCrisis::update()
 {
-   /* for(int i=0;i<meteorites.size();i++)
+   for(int i=0;i<meteorites.size();i++)
         if(dynamic_cast<Meteorite*>(meteorites[i])!=NULL)
         {
             Meteorite*meteorite=dynamic_cast<Meteorite*>(meteorites[i]);
             meteorite->hit(camera->getEyeX()+player->getShiftX()*20,camera->getEyeY()+player->getShiftY()*20,camera->getEyeZ()+player->getShiftZ()*20);
             // qDebug()<<meteorites[i]->getPositionX()<<"    "<<meteorites[i]->getPositionY()<<"   "<<meteorites[i]->getPositionZ()<<endl;
             //   qDebug()<<camera->getEyeX()+player->getShiftX()*20<<"     "<<camera->getEyeY()+player->getShiftY()*20<<"           "<<camera->getEyeZ()+player->getShiftZ()*20<<endl;
-        }*/
+        }
     timerGame-=0.01;
     if(isThereAnObject(camera->getEyeX()+player->getShiftX()*20,camera->getEyeY()+player->getShiftY()*20,camera->getEyeZ()+player->getShiftZ()*20,meteorites)!=-1)
         gameOver();
     if(isThereAnObject(camera->getEyeX()+player->getShiftX()*20,camera->getEyeY()+player->getShiftY()*20,camera->getEyeZ()+player->getShiftZ()*20,obstacles)!=-1)
         gameOver();
     int indexOfObject=isThereAnObject(camera->getEyeX(),camera->getEyeY(),camera->getEyeZ(),checkpoints);
-    if(indexOfObject!=-1)
+    if(indexOfObject==0)
     {
         //checkpoints[indexOfObject]->setAlive(false);
         checkpoints.remove(indexOfObject);
