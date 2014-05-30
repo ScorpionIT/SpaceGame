@@ -174,9 +174,9 @@ void Player::move()
 void Player::moveOn(QString key)
 {
     if(key=="DOWN")
-        seeDown=true;
-    if(key == "UP")
         seeUp=true;
+    if(key == "UP")
+        seeDown=true;
     if(key == "RIGHT")
         seeRight=true;
     if(key == "LEFT")
@@ -190,9 +190,9 @@ void Player::moveOn(QString key)
 void Player::moveOff(QString key)
 {
     if(key=="DOWN")
-        seeDown=false;
-    if(key == "UP")
         seeUp=false;
+    if(key == "UP")
+        seeDown=false;
     if(key == "RIGHT")
         seeRight=false;
     if(key == "LEFT")

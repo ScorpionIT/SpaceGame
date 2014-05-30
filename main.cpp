@@ -8,6 +8,7 @@
 
 int main(int argc,char** argv)
 {
+//QGL::setPreferredPaintEngine(QPaintEngine::OpenGL) ;
     QApplication game(argc,argv);
 
     GameMineCrisis* gameMineCrisis=new GameMineCrisis();

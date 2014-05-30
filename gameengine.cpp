@@ -124,11 +124,21 @@ void GameEngine::keyReleaseEvent(QKeyEvent* event)
         emit keyRelease ("S");
 }
 
-void GameEngine::drawText (QString text, GLfloat x, GLfloat y, GLfloat z, QFont font)
+void GameEngine::drawText (QString text, QFont font)
 {
-    glPushMatrix();
-    this->renderText (x, y, z, text, font);
-    glPopMatrix();
+    drawText (text, this->width()/2, this->height()/2, true, font);
+}
+
+void GameEngine::drawText (QString text, GLfloat x, GLfloat y, bool center, QFont font)
+{
+    int chSize; //Dimensione carattere
+    if (center)
+        chSize = font.weight()/2;
+    else
+        chSize = 0;
+
+    this->renderText (x- ( chSize * (text.length()/2) ), y + chSize, text, font);
+
 }
 
 // OPENGL'S DRAWING BASE FUNCTIONS
@@ -167,6 +177,13 @@ void GameEngine::setColor (GLfloat red, GLfloat green, GLfloat blue, GLfloat alp
     makeCurrent();
     glColor4f(red, green, blue, alpha);
 }
+
+void GameEngine::clearColor ()
+{
+    makeCurrent();
+    glClear(GL_COLOR);
+}
+
 
 // GEOMETRIC PRIMITIVES
 GLUquadric* GameEngine::sphereSettings (GLboolean textured, GLboolean wired)
@@ -251,7 +268,7 @@ void GameEngine::drawCube (GLfloat size)
 void GameEngine::drawModel (Model* model)
 {
     makeCurrent();
-    glRenderObj(model->getModel());
+    glRenderObj (model->getModel());
 }
 
 // TEXTURE FUNCITONS
@@ -356,6 +373,7 @@ no_texture:
             tex.img[1] = (uint8_t)(255 * obj->materials[i]->diffuse.g);
             tex.img[2] = (uint8_t)(255 * obj->materials[i]->diffuse.b);
             tex.img[3] = (uint8_t)(255 * obj->materials[i]->alpha);
+            glColor4f( 1, 1, 1, 1);
         }
         glBindTexture(GL_TEXTURE_2D, textures[i]);
         //qDebug() << textures[i] << endl;

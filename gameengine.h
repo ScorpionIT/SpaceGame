@@ -27,7 +27,8 @@ public:
 
     void clean(); // Clean screen, call before each redraw
 
-    void drawText (QString text, GLfloat x, GLfloat y, GLfloat z, QFont font=QFont());
+    void drawText (QString text, QFont font=QFont());
+    void drawText (QString text, GLfloat x, GLfloat y, bool center, QFont font=QFont());
 
     // OPENGL'S DRAWING BASE FUNCTIONS
     void pushMatrix();
@@ -36,6 +37,7 @@ public:
     void Translate (GLfloat x, GLfloat y, GLfloat z);
     void Rotate (GLfloat angle, GLfloat x, GLfloat y, GLfloat z);
     void setColor (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+    void clearColor ();
 
     // TEXTURE FUNCTIONS
     void enableTexture();

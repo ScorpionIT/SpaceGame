@@ -29,7 +29,7 @@ SOURCES += \
 
 LIBS += -L"./libObj/lib" -lobj -lGLU -lglut
 
-QT += opengl
+QT += opengl multimedia
 
 OTHER_FILES +=
 

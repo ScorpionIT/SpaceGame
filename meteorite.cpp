@@ -11,7 +11,7 @@ void Meteorite::render()
 {
     gm->pushMatrix();
     gm->Translate(getPositionX(),getPositionY(),getPositionZ());
-    //glClear(GL_COLOR);
+    gm->clearColor();
     gm->setColor(1.0,0.0,0.0,1.0);
     gm->drawSphere(gm->sphereSettings(false,false), Meteorite::SIZE*2, 30, 30);
     gm->popMatrix();

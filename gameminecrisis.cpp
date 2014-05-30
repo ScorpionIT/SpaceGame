@@ -22,6 +22,21 @@ GameMineCrisis::GameMineCrisis()
     timer_gameMainLoop->start(1);
 
     numberOfcheckpoint=NUMBER_OF_CHECKPOINTS;
+
+
+    int id = QFontDatabase::addApplicationFont("data/fonts/DIGITALDREAMNARROW.ttf");
+    //  qDebug() << id << endl;
+    QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+    textFont.setFamily(family);
+    textFont.setBold(true);
+
+    /*backgroundMusic = new QSound("data/audio/background.wav", this);
+    backgroundMusic->setLoops(-1);*/
+
+    /*effect->setSource(QUrl::fromLocalFile("engine.wav"));
+    effect->setLoopCount(QSoundEffect::Infinite);
+    effect->setVolume(0.25f);*/
+
 }
 
 void GameMineCrisis::start()
@@ -38,6 +53,8 @@ void GameMineCrisis::start()
     //gm->addObjectToRenderAfterRenderCamera(sky);
     gm->resize (800, 600);
     gm->show();
+    //backgroundMusic->play();
+    //effect->play();
 }
 
 void GameMineCrisis::gameMainLoop()
@@ -52,19 +69,19 @@ void GameMineCrisis::gameMainLoop()
     for (QVector<EngineObject*>::iterator obj = meteorites.begin(); obj != meteorites.end(); obj++)
     {
         //if((*obj)->isAlive())
-            (*obj)->render();
+        (*obj)->render();
     }
 
     for (QVector<EngineObject*>::iterator obj = checkpoints.begin(); obj != checkpoints.end(); obj++)
     {
         //if((*obj)->isAlive())
-            (*obj)->render();
+        (*obj)->render();
     }
 
     for (QVector<EngineObject*>::iterator obj = obstacles.begin(); obj != obstacles.end(); obj++)
     {
         //if((*obj)->isAlive())
-            (*obj)->render();
+        (*obj)->render();
     }
 
     earth->render();
@@ -75,13 +92,18 @@ void GameMineCrisis::gameMainLoop()
         this->update();
     else
     {
-        QFont font;
         gm->setColor(1.0, 0, 0, 1);
-        font.setPixelSize(40);
-        gm->drawText(QString ("GAME OVER"), camera->getForwardX()-1, camera->getForwardY(), camera->getForwardZ(), font);
+        textFont.setPixelSize(40);
+        gm->drawText(QString ("GAME OVER"), textFont);
+        //gm->clearColor();
     }
 
-    gm->swapBuffers();
+    //HUD
+    gm->setColor(1.0, 0, 0, 1);
+    textFont.setPixelSize(15);
+    gm->drawText(hud_timerGame, 5, 20, false, textFont);
+    gm->drawText(hud_checkpoints, 5, 40, false, textFont);
+    gm->swapBuffers(); //Swap screen/buffer
 }
 
 
@@ -173,7 +195,7 @@ void GameMineCrisis::gameOver()
 
 void GameMineCrisis::update()
 {
-   /* for(int i=0;i<meteorites.size();i++)
+    /* for(int i=0;i<meteorites.size();i++)
         if(dynamic_cast<Meteorite*>(meteorites[i])!=NULL)
         {
             Meteorite*meteorite=dynamic_cast<Meteorite*>(meteorites[i]);
@@ -205,6 +227,12 @@ void GameMineCrisis::update()
         timerGame=0.0;
         gameOver();
     }
-    qDebug()<<"timerGame  "<<timerGame<<endl;
-    qDebug()<<"numberOfcheckpoint  "<<numberOfcheckpoint<<endl;
+    hud_timerGame.clear();
+    hud_timerGame.append("Timer: ");
+    hud_timerGame.append (QString::number(timerGame, 'f', 3));
+    hud_checkpoints.clear();
+    hud_checkpoints.append("Checkpoints: ");
+    hud_checkpoints.append (QString::number(numberOfcheckpoint));
+    // qDebug()<<"timerGame  "<<timerGame<<endl;
+    //qDebug()<<"numberOfcheckpoint  "<<numberOfcheckpoint<<endl;
 }

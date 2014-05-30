@@ -12,6 +12,9 @@
 #include "earth.h"
 #include <QTimer>
 #include <QObject>
+#include <QFontDatabase>
+#include <QSound>
+//#include <QSoundEffect>
 
 class GameMineCrisis:public QObject
 {
@@ -39,8 +42,13 @@ private:
     QVector<EngineObject*> checkpoints;
     QVector<EngineObject*> obstacles;
     GLfloat timerGame;
+    QString hud_timerGame;
+    QString hud_checkpoints;
     QTimer *timer;
     QTimer *timer_gameMainLoop;
+    QFont textFont;
+    //QSound* backgroundMusic;
+    //QSoundEffect* effect;
     int numberOfcheckpoint;
     bool gameover;
 
