@@ -24,6 +24,8 @@ Player::Player(GameEngine* gm, Camera *camera, Sky* sky) :
     rotateXY = 0.0;
     rotateXZ = 0.0;
     rotateModelXZ = 0.0;
+    whingAngle = 0.0;
+    tailAngle = 0.0;
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(move()));
     timer->start(25);
@@ -45,7 +47,7 @@ void Player::render()
     gm->Rotate(180,0,1,0);
     gm->Rotate(rotateModelXZ, 1, 0, 0);
     gm->Rotate(whingAngle,0,0,1);
-    gm->Rotate(-whingAngle/2,0,1,0);
+    gm->Rotate(tailAngle,0,1,0);
     gm->drawModel(model);
     gm->disableTexture();
     gm->popMatrix();
@@ -140,7 +142,9 @@ void Player::move()
 
     if(seeRight)
     {
-        whingAngle++;
+        if (tailAngle-0.5 >= -10.0)
+            tailAngle -= 0.5;
+        whingAngle += 1;
         if(whingAngle>=20)
             whingAngle=20;
         rotateXY-=rotateAngleXY;
@@ -153,7 +157,9 @@ void Player::move()
     {
         if(moveWhingRight)
         {
-            whingAngle--;
+            if (tailAngle+0.5 <= 0)
+                tailAngle += 0.5;
+            whingAngle -= 1;
             if(whingAngle<0)
                 whingAngle=0;
         }
@@ -162,7 +168,9 @@ void Player::move()
 
     if(seeLeft)
     {
-        whingAngle--;
+        if (tailAngle+0.5 <= 10)
+            tailAngle += 0.5;
+        whingAngle -= 1;
         if(whingAngle<=-20)
             whingAngle=-20;
         rotateXY+=rotateAngleXY;
@@ -173,9 +181,11 @@ void Player::move()
     }
     else
     {
+        if (tailAngle-0.5 >= 0)
+            tailAngle -= 0.5;
         if(!moveWhingRight)
         {
-            whingAngle++;
+            whingAngle += 1;
             if(whingAngle>=0)
                 whingAngle=0;
         }
