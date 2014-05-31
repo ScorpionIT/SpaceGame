@@ -14,8 +14,7 @@ public:
     Player(GameEngine* gm, Camera* camera, Sky* sky);
     virtual void render();
     virtual GLfloat getSize();
-    void stop();
-    void start();
+    void pause (bool p);
     GLfloat getShiftX();
     GLfloat getShiftY();
     GLfloat getShiftZ();
@@ -41,6 +40,7 @@ private:
     GLfloat rotateXZ ;
     GLfloat rotateModelXZ ;
     GLint whingAngle;
+    GLfloat tailAngle;
     const GLfloat MAX_SPEED;
     const GLfloat STANDARD_SPEED;
     const GLfloat MIN_SPEED;

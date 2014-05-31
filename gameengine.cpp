@@ -111,17 +111,30 @@ void GameEngine::keyReleaseEvent(QKeyEvent* event)
 {
     if(event->key()==Qt::Key_Up)
         emit keyRelease ("UP");
+
     if(event->key()==Qt::Key_Down)
         emit keyRelease ("DOWN");
+
     if(event->key()==Qt::Key_Right)
         emit keyRelease ("RIGHT");
+
     if(event->key()==Qt::Key_Left)
         emit keyRelease ("LEFT");
 
     if(event->key()==Qt::Key_W)
         emit keyRelease ("W");
+
     if(event->key()==Qt::Key_S)
         emit keyRelease ("S");
+
+    if(event->key()==Qt::Key_F)
+        if (isFullScreen())
+            showNormal();
+        else
+            showFullScreen();
+
+    if(event->key()==Qt::Key_P)
+        emit keyRelease("P");
 }
 
 void GameEngine::drawText (QString text, QFont font)

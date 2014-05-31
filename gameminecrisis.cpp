@@ -3,23 +3,22 @@
 GameMineCrisis::GameMineCrisis()
 {
     this->gameover = false;
+    numberOfcheckpoint=NUMBER_OF_CHECKPOINTS;
+    pause = false;
+
     camera = new Camera(0, 0, 0, 1, 0, 0);
     GLfloat skySize = GameMineCrisis::NUMBER_OF_CHECKPOINTS*Checkpoint::DISTANCE+Checkpoint::SIZE;
-    //GLfloat skySize = 1000;
     gm = new GameEngine(camera,skySize*100);
     sky = new Sky(gm, skySize);
     player = new Player(gm, camera, sky);
     earth=new Earth(gm, 0, sky->getSize()*3, 0, sky->getSize());
-    //earth=new Earth(gm, 0,0,0,100) ;
     timerGame=10;
 
     timer_gameMainLoop = new QTimer(this);
     connect(timer_gameMainLoop, SIGNAL(timeout()), this, SLOT(gameMainLoop()));
 
-    numberOfcheckpoint=NUMBER_OF_CHECKPOINTS;
 
     int id = QFontDatabase::addApplicationFont("data/fonts/DIGITALDREAMNARROW.ttf");
-    //  qDebug() << id << endl;
     QString family = QFontDatabase::applicationFontFamilies(id).at(0);
     textFont.setFamily(family);
     textFont.setBold(true);
@@ -50,10 +49,10 @@ void GameMineCrisis::start()
 {
     QObject::connect(gm, SIGNAL(keyPress(QString)), player, SLOT(moveOn(QString)));
     QObject::connect(gm, SIGNAL(keyRelease(QString)), player, SLOT(moveOff(QString)));
+    QObject::connect(gm, SIGNAL(keyRelease(QString)), this, SLOT(processKeys(QString)));
     QObject::connect (player, SIGNAL(turboOn()), turboEffect, SLOT(play()));
     QObject::connect (player, SIGNAL(turboOff()), turboEffect, SLOT(stop()));
     QObject::connect (backgroundMusic, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(loopBackgroundMusic(QMediaPlayer::MediaStatus))); //LOOP BACKGROUND MUSIC
-    QObject::connect (turboEffect, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(loopTurboEffect(QMediaPlayer::MediaStatus))); //LOOP SOUND TURBO EFFECT
 
     addRandomMeteorites();
     addRandomCheckpoints();
@@ -100,14 +99,20 @@ void GameMineCrisis::gameMainLoop()
     sky->render();
     gm->popMatrix();
 
-    if (!gameover)
+    if (!gameover && !pause)
         this->update();
-    else
+    else if (gameover)
     {
         gm->setColor(1.0, 0, 0, 1);
         textFont.setPixelSize(40);
         gm->drawText(QString ("GAME OVER"), textFont);
         //gm->clearColor();
+    }
+    else if (pause)
+    {
+        gm->setColor(1.0, 0, 0, 1);
+        textFont.setPixelSize(40);
+        gm->drawText(QString ("PAUSE"), textFont);
     }
 
     //HUD
@@ -200,7 +205,7 @@ void GameMineCrisis::addRandomMeteorites()
 
 void GameMineCrisis::gameOver()
 {
-    player->stop();
+    player->pause(true);
     sky->stop();
     this->gameover = true;
     backgroundMusic->stop();
@@ -250,14 +255,31 @@ void GameMineCrisis::update()
     hud_checkpoints.append (QString::number(numberOfcheckpoint));
 }
 
+void GameMineCrisis::processKeys(QString key)
+{
+    if (key == "P")
+    {
+        if (pause)
+        {
+            QObject::connect(gm, SIGNAL(keyPress(QString)), player, SLOT(moveOn(QString)));
+            player->pause(false);
+            backgroundMusic->play();
+            pause = false;
+        }
+        else
+        {
+            QObject::disconnect(gm, SIGNAL(keyPress(QString)), player, SLOT(moveOn(QString)));
+            player->pause(true);
+            backgroundMusic->pause();
+            if (turboEffect->state() == QMediaPlayer::PlayingState)
+                turboEffect->pause();
+            pause = true;
+        }
+    }
+}
+
 void GameMineCrisis::loopBackgroundMusic(QMediaPlayer::MediaStatus status)
 {
     if (status == QMediaPlayer::QMediaPlayer::EndOfMedia)
         backgroundMusic->play();
-}
-
-void GameMineCrisis::loopTurboEffect(QMediaPlayer::MediaStatus status)
-{
-    if (status == QMediaPlayer::QMediaPlayer::EndOfMedia)
-        turboEffect->play();
 }
