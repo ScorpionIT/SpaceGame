@@ -1,10 +1,10 @@
 #include "checkpoint.h"
 
-Checkpoint::Checkpoint(GameEngine* gm, GLfloat x, GLfloat y, GLfloat z, bool active) :
+Checkpoint::Checkpoint(GameEngine* gm, GLfloat x, GLfloat y, GLfloat z, bool active_) :
   EngineObject(gm)
 {
     setPosition (x, y, z);
-    active=active;
+    active=active_;
 }
 void Checkpoint::render()
 {

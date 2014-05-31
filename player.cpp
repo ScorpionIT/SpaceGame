@@ -2,7 +2,7 @@
 #include <QDebug>
 
 Player::Player(GameEngine* gm, Camera *camera, Sky* sky) :
-    EngineObject (gm), MAX_SPEED(5),MIN_SPEED(0)
+    EngineObject (gm), MAX_SPEED(100), STANDARD_SPEED(50), MIN_SPEED(10)
 {
     this->gm=gm;
     this->sky=sky;
@@ -18,14 +18,20 @@ Player::Player(GameEngine* gm, Camera *camera, Sky* sky) :
     moveWhingRight=false;
     moveWhingUp=false;
     stopMove=false;
-    shift = 5;
+    shift = STANDARD_SPEED/10;
+    rotateAngleXY = 3;
+    rotateAngleXZ = 0.1;
     rotateXY = 0.0;
     rotateXZ = 0.0;
+    rotateModelXZ = 0.0;
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(move()));
     timer->start(25);
 
-    setPosition(camera->getEyeX(),camera->getEyeY(),camera->getEyeZ());
+    qDebug() << shift << endl;
+
+    //setPosition(-2, -5, -20);
+    //setPosition (camera->getEyeX(), camera->getEyeY(), camera->getEyeZ());
     gm->makeCurrent();
     model = new Model ("data/obj/f16/f16.obj");
 }
@@ -34,14 +40,16 @@ void Player::render()
 {
     gm->pushMatrix();
     gm->enableTexture();
-    //gm->Translate(camera->getForwardX(),camera->getForwardY(),camera->getForwardZ());
-    gm->Translate(-2,-5,-20);
+    //gm->Translate(getPositionX() ,getPositionY(), getPositionZ());
+    gm->Translate(-2, -5, -10-shift);
     gm->Rotate(180,0,1,0);
+    gm->Rotate(rotateModelXZ, 1, 0, 0);
     gm->Rotate(whingAngle,0,0,1);
+    gm->Rotate(-whingAngle/2,0,1,0);
     gm->drawModel(model);
     gm->disableTexture();
     gm->popMatrix();
-    //gm->setCamera(camera);
+
 }
 
 GLfloat Player::getSize()
@@ -65,110 +73,114 @@ void Player::move()
     {
         if(incrementShift)
         {
-            shift=shift+1;
+            emit turboOn();
+            if (shift*10 <= MAX_SPEED)
+                shift+=0.1;
         }
 
         if(decrementShift)
         {
-            shift=shift-1;
-            if(shift<MIN_SPEED)
-                shift=MIN_SPEED;
+            if((shift)*10 >= MIN_SPEED)
+                shift-=0.1;
+            rotateAngleXY= 4;
         }
-        if(moveUp)
-        {
-            pxNew=getShiftX()*shift;
-            pyNew=getShiftY()*shift;
-            pzNew=getShiftZ()*shift;
-            if(isInsideSky(px+pxNew,py+pyNew,pz+pzNew))
-            {
-                px+=pxNew;
-                py+=pyNew;
-                pz+=pzNew;
-                camera->setEye(px,py,pz);
-                camera->setForward(camera->getForwardX()+pxNew,camera->getForwardY()+pyNew,camera->getForwardZ()+pzNew);
-            }
 
-        }
-        if(seeUp && rotateXZ<=5)
+        if (!incrementShift)
         {
-            rotateXZ+=0.05;
-            camera->setForward(camera->getForwardX(),camera->getForwardY(),rotateXZ+pz);
-            //moveWhingUp=true;
+            if (shift*10 > STANDARD_SPEED)
+                shift-= 0.1;
+            emit turboOff();
         }
-        /*else
+        if (!decrementShift)
+            if (shift*10 < STANDARD_SPEED)
+                shift+= 0.1;
+
+        rotateAngleXY= 3;
+    }
+    if(moveUp)
     {
-        if(moveWhingUp)
+        pxNew=getShiftX()*shift;
+        pyNew=getShiftY()*shift;
+        pzNew=getShiftZ()*shift;
+        if(isInsideSky(px+pxNew,py+pyNew,pz+pzNew))
         {
-            rotateXZ-=0.05;
-            if(rotateXZ<0)
-                rotateXZ=0;
-            camera->setForward(camera->getForwardX(),camera->getForwardY(),rotateXZ+pz);
+            px+=pxNew;
+            py+=pyNew;
+            pz+=pzNew;
+            camera->setEye(px,py,pz);
+            camera->setForward(camera->getForwardX()+pxNew,camera->getForwardY()+pyNew,camera->getForwardZ()+pzNew);
         }
-    }*/
-        if(seeDown && rotateXZ>=-5)
-        {
-            rotateXZ-=0.05;
-            camera->setForward(camera->getForwardX(),camera->getForwardY(),rotateXZ+pz);
-            //moveWhingUp=false;
 
-        }
-        /*else
+    }
+    if(seeUp && rotateXZ<=5)
     {
-        if(!moveWhingUp)
-        {
-            rotateXZ+=0.05;
-            if(rotateXZ>=0)
-                rotateXZ=0;
-            camera->setForward(camera->getForwardX(),camera->getForwardY(),rotateXZ+pz);
-        }
-    }*/
-        if(seeRight)
-        {
-            whingAngle++;
-            if(whingAngle>=10)
-                whingAngle=10;
-            rotateXY-=3;
-            if(rotateXY%360==0 )
-                rotateXY=0;
-            camera->setForward(cos(rotateXY*M_PI/180)+px,sin(rotateXY*M_PI/180)+py,camera->getForwardZ());
-            moveWhingRight=true;
-        }
-        else
-        {
-            if(moveWhingRight)
-            {
-                whingAngle--;
-                if(whingAngle<0)
-                    whingAngle=0;
-            }
-        }
-
-
-        if(seeLeft)
-        {
-            whingAngle--;
-            if(whingAngle<=-10)
-                whingAngle=-10;
-            rotateXY+=3;
-            if(rotateXY%360==0 )
-                rotateXY=0;
-            camera->setForward(cos(rotateXY*M_PI/180)+px,sin(rotateXY*M_PI/180)+py,camera->getForwardZ());
-            moveWhingRight=false;
-        }
-        else
-        {
-            if(!moveWhingRight)
-            {
-                whingAngle++;
-                if(whingAngle>=0)
-                    whingAngle=0;
-            }
-        }
-        setPosition(camera->getForwardX(),camera->getForwardY(),camera->getForwardZ());
-        //gm->updateGL();
-        //qDebug()<<camera->getEyeX()<<"   "<<camera->getEyeY()<<"    "<<camera->getEyeZ()<<endl;
+        if (rotateModelXZ-0.5 >= -10)
+            rotateModelXZ -= 0.5;
+        rotateXZ+=0.05;
+        camera->setForward(camera->getForwardX(),camera->getForwardY(),rotateXZ+pz);
+        //moveWhingUp=true;
     }
 
+    if(seeDown && rotateXZ>=-5)
+    {
+        if (rotateModelXZ+0.5 <= 10)
+            rotateModelXZ += 0.5;
+        rotateXZ-=0.05;
+        camera->setForward(camera->getForwardX(),camera->getForwardY(),rotateXZ+pz);
+        //moveWhingUp=false;
+    }
+
+    if (!seeUp && !seeDown)
+    {
+        if (rotateModelXZ > 0)
+            rotateModelXZ -= 0.5;
+        else if (rotateModelXZ < 0)
+            rotateModelXZ += 0.5;
+    }
+
+    if(seeRight)
+    {
+        whingAngle++;
+        if(whingAngle>=20)
+            whingAngle=20;
+        rotateXY-=rotateAngleXY;
+        if(rotateXY%360==0 )
+            rotateXY=0;
+        camera->setForward(cos(rotateXY*M_PI/180)+px,sin(rotateXY*M_PI/180)+py,camera->getForwardZ());
+        moveWhingRight=true;
+    }
+    else
+    {
+        if(moveWhingRight)
+        {
+            whingAngle--;
+            if(whingAngle<0)
+                whingAngle=0;
+        }
+    }
+
+
+    if(seeLeft)
+    {
+        whingAngle--;
+        if(whingAngle<=-20)
+            whingAngle=-20;
+        rotateXY+=rotateAngleXY;
+        if(rotateXY%360==0 )
+            rotateXY=0;
+        camera->setForward(cos(rotateXY*M_PI/180)+px,sin(rotateXY*M_PI/180)+py,camera->getForwardZ());
+        moveWhingRight=false;
+    }
+    else
+    {
+        if(!moveWhingRight)
+        {
+            whingAngle++;
+            if(whingAngle>=0)
+                whingAngle=0;
+        }
+    }
+    //setPosition(camera->getForwardX(),camera->getForwardY(),camera->getForwardZ()); ???
 }
 
 void Player::moveOn(QString key)
@@ -218,7 +230,6 @@ GLfloat Player::getShiftZ()
 {
     return rotateXZ;
 }
-
 
 bool Player::isInsideSky(GLdouble px,GLdouble py,GLdouble pz)
 {

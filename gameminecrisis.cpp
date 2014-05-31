@@ -3,7 +3,7 @@
 GameMineCrisis::GameMineCrisis()
 {
     this->gameover = false;
-    camera = new Camera(0, -15, 5,1,-15,5);
+    camera = new Camera(0, 0, 0, 1, 0, 0);
     GLfloat skySize = GameMineCrisis::NUMBER_OF_CHECKPOINTS*Checkpoint::DISTANCE+Checkpoint::SIZE;
     //GLfloat skySize = 1000;
     gm = new GameEngine(camera,skySize*100);
@@ -13,16 +13,10 @@ GameMineCrisis::GameMineCrisis()
     //earth=new Earth(gm, 0,0,0,100) ;
     timerGame=10;
 
-    /*timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-    timer->start(1);*/
-
     timer_gameMainLoop = new QTimer(this);
     connect(timer_gameMainLoop, SIGNAL(timeout()), this, SLOT(gameMainLoop()));
-    timer_gameMainLoop->start(1);
 
     numberOfcheckpoint=NUMBER_OF_CHECKPOINTS;
-
 
     int id = QFontDatabase::addApplicationFont("data/fonts/DIGITALDREAMNARROW.ttf");
     //  qDebug() << id << endl;
@@ -30,39 +24,49 @@ GameMineCrisis::GameMineCrisis()
     textFont.setFamily(family);
     textFont.setBold(true);
 
-    /*backgroundMusic = new QSound("data/audio/background.wav", this);
-    backgroundMusic->setLoops(-1);*/
+    QDir dataDir ("data");
 
-    /*effect->setSource(QUrl::fromLocalFile("engine.wav"));
-    effect->setLoopCount(QSoundEffect::Infinite);
-    effect->setVolume(0.25f);*/
+    backgroundMusic = new QMediaPlayer();
+    backgroundMusic->setMedia(QUrl::fromLocalFile(dataDir.absolutePath()+"/audio/background.ogg"));
+    backgroundMusic->setVolume(75);
+
+    checkpointEffect = new QMediaPlayer();
+    checkpointEffect->setMedia(QUrl::fromLocalFile(dataDir.absolutePath()+"/audio/checkpoint.ogg"));
+    checkpointEffect->setVolume(100);
+
+    turboEffect = new QMediaPlayer();
+    turboEffect->setMedia(QUrl::fromLocalFile(dataDir.absolutePath()+"/audio/turbo.ogg"));
+    turboEffect->setVolume(100);
 
 }
 
 void GameMineCrisis::start()
 {
-    /*gm->addObjectToRenderAfterRenderCamera(earth);
-    gm->addObjectToRenderBeforeRenderCamera(player);*/
-    QObject::connect(gm, SIGNAL(keyPress(QString)),
-                     player, SLOT(moveOn(QString)));
-    QObject::connect(gm, SIGNAL(keyRelease(QString)),
-                     player, SLOT(moveOff(QString)));
+    QObject::connect(gm, SIGNAL(keyPress(QString)), player, SLOT(moveOn(QString)));
+    QObject::connect(gm, SIGNAL(keyRelease(QString)), player, SLOT(moveOff(QString)));
+    QObject::connect (player, SIGNAL(turboOn()), turboEffect, SLOT(play()));
+    QObject::connect (player, SIGNAL(turboOff()), turboEffect, SLOT(stop()));
+    QObject::connect (player, SIGNAL(turboOff()), turboEffect, SLOT());
     addRandomMeteorites();
     addRandomCheckpoints();
     addRandomObstacles();
     //gm->addObjectToRenderAfterRenderCamera(sky);
     gm->resize (800, 600);
     gm->show();
-    //backgroundMusic->play();
-    //effect->play();
+    backgroundMusic->play();
+    if (!timer_gameMainLoop->isActive())
+        timer_gameMainLoop->start(1);
+
 }
 
 void GameMineCrisis::gameMainLoop()
 {
     gm->clean();
+
     gm->pushMatrix();
     player->render();
     gm->popMatrix();
+
     gm->renderCamera();
 
     gm->pushMatrix();
@@ -100,9 +104,9 @@ void GameMineCrisis::gameMainLoop()
 
     //HUD
     gm->setColor(1.0, 0, 0, 1);
-    textFont.setPixelSize(15);
+    textFont.setPixelSize(20);
     gm->drawText(hud_timerGame, 5, 20, false, textFont);
-    gm->drawText(hud_checkpoints, 5, 40, false, textFont);
+    gm->drawText(hud_checkpoints, 5, 45, false, textFont);
     gm->swapBuffers(); //Swap screen/buffer
 }
 
@@ -124,7 +128,7 @@ void GameMineCrisis::addRandomObstacles()
         obstacles.push_back(new Obstacle(gm, x,y,z));
         //gm->addObjectToRenderAfterRenderCamera(obstacles.back());
     }
-    qDebug()<<"Exit from creation of random meteorites"<<endl;
+    //qDebug()<<"Exit from creation of random meteorites"<<endl;
 
 }
 
@@ -147,6 +151,7 @@ void GameMineCrisis::addRandomCheckpoints()
     if(checkpoints.empty())
     {
         checkpoints.push_back(new Checkpoint(gm, Checkpoint::DISTANCE,0,0,true));
+
         //gm->addObjectToRenderAfterRenderCamera(checkpoints.back());
     }
     for(int i=0;i<GameMineCrisis::NUMBER_OF_CHECKPOINTS-1;i++)
@@ -161,8 +166,7 @@ void GameMineCrisis::addRandomCheckpoints()
         checkpoints.push_back(new Checkpoint(gm, x,y,z,false));
         //gm->addObjectToRenderAfterRenderCamera(checkpoints.back());
     }
-
-    qDebug()<<"Exit from creation of random checkpoints"<<endl;
+    //qDebug()<<"Exit from creation of random checkpoints"<<endl;
 }
 
 void GameMineCrisis::addRandomMeteorites()
@@ -182,7 +186,7 @@ void GameMineCrisis::addRandomMeteorites()
         meteorites.push_back(new Meteorite(gm, x,y,z));
         //gm->addObjectToRenderAfterRenderCamera(meteorites.back());
     }
-    qDebug()<<"Exit from creation of random meteorites"<<endl;
+    //qDebug()<<"Exit from creation of random meteorites"<<endl;
 
 }
 
@@ -191,26 +195,26 @@ void GameMineCrisis::gameOver()
     player->stop();
     sky->stop();
     this->gameover = true;
+    backgroundMusic->stop();
 }
 
 void GameMineCrisis::update()
 {
-    /* for(int i=0;i<meteorites.size();i++)
+    for(int i=0;i<meteorites.size();i++)
         if(dynamic_cast<Meteorite*>(meteorites[i])!=NULL)
         {
             Meteorite*meteorite=dynamic_cast<Meteorite*>(meteorites[i]);
             meteorite->hit(camera->getEyeX()+player->getShiftX()*20,camera->getEyeY()+player->getShiftY()*20,camera->getEyeZ()+player->getShiftZ()*20);
-            // qDebug()<<meteorites[i]->getPositionX()<<"    "<<meteorites[i]->getPositionY()<<"   "<<meteorites[i]->getPositionZ()<<endl;
-            //   qDebug()<<camera->getEyeX()+player->getShiftX()*20<<"     "<<camera->getEyeY()+player->getShiftY()*20<<"           "<<camera->getEyeZ()+player->getShiftZ()*20<<endl;
-        }*/
+        }
     timerGame-=0.01;
     if(isThereAnObject(camera->getEyeX()+player->getShiftX()*20,camera->getEyeY()+player->getShiftY()*20,camera->getEyeZ()+player->getShiftZ()*20,meteorites)!=-1)
         gameOver();
     if(isThereAnObject(camera->getEyeX()+player->getShiftX()*20,camera->getEyeY()+player->getShiftY()*20,camera->getEyeZ()+player->getShiftZ()*20,obstacles)!=-1)
         gameOver();
     int indexOfObject=isThereAnObject(camera->getEyeX(),camera->getEyeY(),camera->getEyeZ(),checkpoints);
-    if(indexOfObject!=-1)
+    if(indexOfObject==0)
     {
+        checkpointEffect->play();
         //checkpoints[indexOfObject]->setAlive(false);
         checkpoints.remove(indexOfObject);
         if(!checkpoints.empty())
@@ -233,6 +237,4 @@ void GameMineCrisis::update()
     hud_checkpoints.clear();
     hud_checkpoints.append("Checkpoints: ");
     hud_checkpoints.append (QString::number(numberOfcheckpoint));
-    // qDebug()<<"timerGame  "<<timerGame<<endl;
-    //qDebug()<<"numberOfcheckpoint  "<<numberOfcheckpoint<<endl;
 }

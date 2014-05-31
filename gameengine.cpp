@@ -31,7 +31,7 @@ GameEngine::GameEngine(Camera *camera, GLdouble viewVolume_):
     spotDir0[1] = 0.0;
     spotDir0[2] = -0.0;
 
-    //makeCurrent();
+    makeCurrent();
 
 }
 

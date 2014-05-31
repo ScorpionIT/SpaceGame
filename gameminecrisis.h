@@ -13,8 +13,8 @@
 #include <QTimer>
 #include <QObject>
 #include <QFontDatabase>
-#include <QSound>
-//#include <QSoundEffect>
+#include <QMediaPlayer>
+#include <QDir>
 
 class GameMineCrisis:public QObject
 {
@@ -47,8 +47,9 @@ private:
     QTimer *timer;
     QTimer *timer_gameMainLoop;
     QFont textFont;
-    //QSound* backgroundMusic;
-    //QSoundEffect* effect;
+    QMediaPlayer* backgroundMusic;
+    QMediaPlayer* checkpointEffect;
+    QMediaPlayer* turboEffect;
     int numberOfcheckpoint;
     bool gameover;
 

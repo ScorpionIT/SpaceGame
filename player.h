@@ -34,16 +34,23 @@ private:
     bool decrementShift;
     bool moveWhingRight;
     bool moveWhingUp;
-    GLfloat  shift ;
+    GLfloat  shift;
+    GLint rotateAngleXY;
     GLint   rotateXY ;
-    GLfloat   rotateXZ ;
+    GLfloat rotateAngleXZ;
+    GLfloat rotateXZ ;
+    GLfloat rotateModelXZ ;
     GLint whingAngle;
     const GLfloat MAX_SPEED;
+    const GLfloat STANDARD_SPEED;
     const GLfloat MIN_SPEED;
+    GLfloat speed;
     QTimer *timer;
     bool stopMove;
 
 signals:
+    void turboOn();
+    void turboOff();
 
 public slots:
     void moveOn(QString direction);

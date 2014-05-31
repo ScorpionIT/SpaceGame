@@ -27,7 +27,7 @@ SOURCES += \
     obstacle.cpp \
     model.cpp
 
-LIBS += -L"./libObj/lib" -lobj -lGLU -lglut
+LIBS += -L"./libObj/lib" -lobj -lGLU
 
 QT += opengl multimedia
 
