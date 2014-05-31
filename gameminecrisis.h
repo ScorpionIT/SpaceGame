@@ -46,6 +46,7 @@ private:
     QMediaPlayer* backgroundMusic;
     QMediaPlayer* checkpointEffect;
     QMediaPlayer* turboEffect;
+    QMediaPlayer* gameOverEffect;
     int numberOfcheckpoint;
     bool gameover;
 
