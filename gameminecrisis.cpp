@@ -46,7 +46,6 @@ void GameMineCrisis::start()
     QObject::connect(gm, SIGNAL(keyRelease(QString)), player, SLOT(moveOff(QString)));
     QObject::connect (player, SIGNAL(turboOn()), turboEffect, SLOT(play()));
     QObject::connect (player, SIGNAL(turboOff()), turboEffect, SLOT(stop()));
-    QObject::connect (player, SIGNAL(turboOff()), turboEffect, SLOT());
     QObject::connect (backgroundMusic, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(loopBackgroundMusic(QMediaPlayer::MediaStatus))); //LOOP BACKGROUND MUSIC
     QObject::connect (turboEffect, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(loopTurboEffect(QMediaPlayer::MediaStatus))); //LOOP SOUND TURBO EFFECT
 
