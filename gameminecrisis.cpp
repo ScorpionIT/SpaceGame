@@ -47,6 +47,9 @@ void GameMineCrisis::start()
     QObject::connect (player, SIGNAL(turboOn()), turboEffect, SLOT(play()));
     QObject::connect (player, SIGNAL(turboOff()), turboEffect, SLOT(stop()));
     QObject::connect (player, SIGNAL(turboOff()), turboEffect, SLOT());
+    QObject::connect (backgroundMusic, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(loopBackgroundMusic(QMediaPlayer::MediaStatus))); //LOOP BACKGROUND MUSIC
+    QObject::connect (turboEffect, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(loopTurboEffect(QMediaPlayer::MediaStatus))); //LOOP SOUND TURBO EFFECT
+
     addRandomMeteorites();
     addRandomCheckpoints();
     addRandomObstacles();
@@ -196,6 +199,8 @@ void GameMineCrisis::gameOver()
     sky->stop();
     this->gameover = true;
     backgroundMusic->stop();
+    if (turboEffect->state() == QMediaPlayer::PlayingState)
+        turboEffect->stop();
 }
 
 void GameMineCrisis::update()
@@ -237,4 +242,16 @@ void GameMineCrisis::update()
     hud_checkpoints.clear();
     hud_checkpoints.append("Checkpoints: ");
     hud_checkpoints.append (QString::number(numberOfcheckpoint));
+}
+
+void GameMineCrisis::loopBackgroundMusic(QMediaPlayer::MediaStatus status)
+{
+    if (status == QMediaPlayer::QMediaPlayer::EndOfMedia)
+        backgroundMusic->play();
+}
+
+void GameMineCrisis::loopTurboEffect(QMediaPlayer::MediaStatus status)
+{
+    if (status == QMediaPlayer::QMediaPlayer::EndOfMedia)
+        turboEffect->play();
 }

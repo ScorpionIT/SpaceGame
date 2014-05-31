@@ -23,10 +23,6 @@ class GameMineCrisis:public QObject
 public:
     GameMineCrisis();
     void start();
-    void addRandomObstacles();
-    void addRandomCheckpoints();
-    void addRandomMeteorites();
-    void gameOver();
     static const int NUMBER_OF_CHECKPOINTS=20;
     static const int NUMBER_OF_METEORITES=100;
     static const int NUMBER_OF_OBSTACLES=50;
@@ -53,9 +49,16 @@ private:
     int numberOfcheckpoint;
     bool gameover;
 
+    void addRandomObstacles();
+    void addRandomCheckpoints();
+    void addRandomMeteorites();
+    void gameOver();
+
 public slots:
     void gameMainLoop();
     void update();
+    void loopBackgroundMusic(QMediaPlayer::MediaStatus status);
+    void loopTurboEffect(QMediaPlayer::MediaStatus status);
 };
 
 #endif // GAMEMINECRISIS_H
