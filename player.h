@@ -14,8 +14,7 @@ public:
     Player(GameEngine* gm, Camera* camera, Sky* sky);
     virtual void render();
     virtual GLfloat getSize();
-    void stop();
-    void start();
+    void pause (bool p);
     GLfloat getShiftX();
     GLfloat getShiftY();
     GLfloat getShiftZ();

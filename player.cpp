@@ -6,7 +6,7 @@ Player::Player(GameEngine* gm, Camera *camera, Sky* sky) :
 {
     this->gm=gm;
     this->sky=sky;
-    this-> camera=camera;
+    this->camera=camera;
 
     seeLeft=false;
     seeRight=false;
@@ -28,14 +28,11 @@ Player::Player(GameEngine* gm, Camera *camera, Sky* sky) :
     tailAngle = 0.0;
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(move()));
-    timer->start(25);
-
-    qDebug() << shift << endl;
-
     //setPosition(-2, -5, -20);
     //setPosition (camera->getEyeX(), camera->getEyeY(), camera->getEyeZ());
     gm->makeCurrent();
     model = new Model ("data/obj/f16/f16.obj");
+    pause (false);
 }
 
 void Player::render()
@@ -59,10 +56,12 @@ GLfloat Player::getSize()
     return 0;
 }
 
-
-void Player::stop()
+void Player::pause(bool p)
 {
-    timer->stop();
+    if (p)
+        timer->stop();
+    else
+        timer->start(25);
 }
 
 void Player::move()

@@ -48,6 +48,7 @@ private:
     QMediaPlayer* turboEffect;
     int numberOfcheckpoint;
     bool gameover;
+    bool pause;
 
     void addRandomObstacles();
     void addRandomCheckpoints();
@@ -57,8 +58,8 @@ private:
 public slots:
     void gameMainLoop();
     void update();
+    void processKeys(QString key);
     void loopBackgroundMusic(QMediaPlayer::MediaStatus status);
-    void loopTurboEffect(QMediaPlayer::MediaStatus status);
 };
 
 #endif // GAMEMINECRISIS_H
