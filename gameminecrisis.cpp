@@ -12,10 +12,13 @@ GameMineCrisis::GameMineCrisis()
     sky = new Sky(gm, skySize);
     player = new Player(gm, camera, sky);
     earth=new Earth(gm, 0, sky->getSize()*3, 0, sky->getSize());
-    timerGame=10;
+    timerGameT = QTime(0, 0, 10, 0);
 
     timer_gameMainLoop = new QTimer(this);
     connect(timer_gameMainLoop, SIGNAL(timeout()), this, SLOT(gameMainLoop()));
+    uTimer = new QTimer(this);
+    connect(uTimer, SIGNAL(timeout()), this, SLOT(updateTimer()));
+
 
 
     int id = QFontDatabase::addApplicationFont("data/fonts/DIGITALDREAMNARROW.ttf");
@@ -57,7 +60,9 @@ void GameMineCrisis::start()
     backgroundMusic->play();
     if (!timer_gameMainLoop->isActive())
         timer_gameMainLoop->start(1);
-
+    startTime = QTime::currentTime();
+    if (!uTimer->isActive())
+        uTimer->start(1);
 }
 
 void GameMineCrisis::gameMainLoop()
@@ -199,6 +204,7 @@ void GameMineCrisis::addRandomMeteorites()
 
 void GameMineCrisis::gameOver()
 {
+    uTimer->stop();
     player->pause(true);
     sky->stop();
     this->gameover = true;
@@ -215,7 +221,6 @@ void GameMineCrisis::update()
             Meteorite*meteorite=dynamic_cast<Meteorite*>(meteorites[i]);
             meteorite->hit(camera->getEyeX()+player->getShiftX()*20,camera->getEyeY()+player->getShiftY()*20,camera->getEyeZ()+player->getShiftZ()*20);
         }
-    timerGame-=0.01;
     if(isThereAnObject(camera->getEyeX()+player->getShiftX()*20,camera->getEyeY()+player->getShiftY()*20,camera->getEyeZ()+player->getShiftZ()*20,meteorites)!=-1)
         gameOver();
     if(isThereAnObject(camera->getEyeX()+player->getShiftX()*20,camera->getEyeY()+player->getShiftY()*20,camera->getEyeZ()+player->getShiftZ()*20,obstacles)!=-1)
@@ -232,17 +237,9 @@ void GameMineCrisis::update()
             if(checkpoint!=NULL)
                 checkpoint->setActive(true);
         }
-        timerGame+=Checkpoint::ADDITIONAL_TIME;
+        timerGameT = timerGameT.addSecs(Checkpoint::ADDITIONAL_TIME);
         numberOfcheckpoint--;
     }
-    if(timerGame<0.1)
-    {
-        timerGame=0.0;
-        gameOver();
-    }
-    hud_timerGame.clear();
-    hud_timerGame.append("Timer: ");
-    hud_timerGame.append (QString::number(timerGame, 'f', 3));
     hud_checkpoints.clear();
     hud_checkpoints.append("Checkpoints: ");
     hud_checkpoints.append (QString::number(numberOfcheckpoint));
@@ -252,21 +249,26 @@ void GameMineCrisis::processKeys(QString key)
 {
     if (key == "P")
     {
-        if (pause)
+        if (!gameover)
         {
-            QObject::connect(gm, SIGNAL(keyPress(QString)), player, SLOT(moveOn(QString)));
-            player->pause(false);
-            backgroundMusic->play();
-            pause = false;
-        }
-        else
-        {
-            QObject::disconnect(gm, SIGNAL(keyPress(QString)), player, SLOT(moveOn(QString)));
-            player->pause(true);
-            backgroundMusic->pause();
-            if (turboEffect->state() == QMediaPlayer::PlayingState)
-                turboEffect->pause();
-            pause = true;
+            if (pause)
+            {
+                QObject::connect(gm, SIGNAL(keyPress(QString)), player, SLOT(moveOn(QString)));
+                player->pause(false);
+                uTimer->start(1);
+                backgroundMusic->play();
+                pause = false;
+            }
+            else
+            {
+                QObject::disconnect(gm, SIGNAL(keyPress(QString)), player, SLOT(moveOn(QString)));
+                player->pause(true);
+                uTimer->stop();
+                backgroundMusic->pause();
+                if (turboEffect->state() == QMediaPlayer::PlayingState)
+                    turboEffect->pause();
+                pause = true;
+            }
         }
     }
 }
@@ -276,3 +278,18 @@ void GameMineCrisis::loopBackgroundMusic(QMediaPlayer::MediaStatus status)
     if (status == QMediaPlayer::QMediaPlayer::EndOfMedia)
         backgroundMusic->play();
 }
+
+void GameMineCrisis::updateTimer()
+{
+    QTime current = QTime::currentTime();
+    timerGame = timerGameT.addMSecs(current.msecsTo(startTime));
+    if(timerGame.second() == 0)
+    {
+        timerGame.setHMS(0, 0, 0, 0);
+        gameOver();
+    }
+    hud_timerGame.clear();
+    hud_timerGame.append("Timer: ");
+    hud_timerGame.append (timerGame.toString("ss.zzz"));
+}
+

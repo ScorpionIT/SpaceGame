@@ -37,10 +37,12 @@ private:
     QVector<EngineObject*> meteorites;
     QVector<EngineObject*> checkpoints;
     QVector<EngineObject*> obstacles;
-    GLfloat timerGame;
     QString hud_timerGame;
     QString hud_checkpoints;
-    QTimer *timer;
+    QTime timerGameT;
+    QTime timerGame;
+    QTime startTime;
+    QTimer *uTimer;
     QTimer *timer_gameMainLoop;
     QFont textFont;
     QMediaPlayer* backgroundMusic;
@@ -58,6 +60,7 @@ private:
 public slots:
     void gameMainLoop();
     void update();
+    void updateTimer ();
     void processKeys(QString key);
     void loopBackgroundMusic(QMediaPlayer::MediaStatus status);
 };
