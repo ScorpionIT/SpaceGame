@@ -40,6 +40,12 @@ GameMineCrisis::GameMineCrisis()
     turboEffect->setMedia(QUrl::fromLocalFile(dataDir.absolutePath()+"/audio/turbo.ogg"));
     turboEffect->setVolume(100);
 
+
+    gameOverEffect = new QMediaPlayer();
+    gameOverEffect->setMedia(QUrl::fromLocalFile(dataDir.absolutePath()+"/audio/gameover.ogg"));
+    gameOverEffect->setVolume(100);
+
+
 }
 
 void GameMineCrisis::start()
@@ -209,6 +215,7 @@ void GameMineCrisis::gameOver()
     sky->stop();
     this->gameover = true;
     backgroundMusic->stop();
+    gameOverEffect->play();
     if (turboEffect->state() == QMediaPlayer::PlayingState)
         turboEffect->stop();
 }
