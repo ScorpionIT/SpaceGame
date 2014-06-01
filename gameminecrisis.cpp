@@ -261,6 +261,10 @@ void GameMineCrisis::processKeys(QString key)
             {
                 QObject::connect(gm, SIGNAL(keyPress(QString)), player, SLOT(moveOn(QString)));
                 player->pause(false);
+                startTime = QTime::currentTime();
+                qDebug() << startTime;
+                startTime = startTime.addSecs(-(timerGameT.second()-timerGame.second()));
+                startTime = startTime.addMSecs(-(timerGameT.msec()-timerGame.msec()));
                 uTimer->start(1);
                 backgroundMusic->play();
                 pause = false;
