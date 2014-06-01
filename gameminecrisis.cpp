@@ -111,7 +111,6 @@ void GameMineCrisis::gameMainLoop()
         gm->setColor(1.0, 0, 0, 1);
         textFont.setPixelSize(40);
         gm->drawText(QString ("GAME OVER"), textFont);
-        //gm->clearColor();
     }
     else if (pause)
     {
