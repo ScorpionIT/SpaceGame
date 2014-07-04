@@ -1,26 +1,20 @@
 #include "meteorite.h"
 
-Meteorite::Meteorite(GameEngine* gm, GLfloat x, GLfloat y, GLfloat z) :
-    EngineObject(gm)
+Meteorite::Meteorite(GLfloat x, GLfloat y, GLfloat z)
 {
     setPosition(x,y,z);
+    setSize(SIZE,SIZE,SIZE);
     quad = gluNewQuadric();
 }
 
 void Meteorite::render()
 {
-    gm->pushMatrix();
-    gm->Translate(getPositionX(),getPositionY(),getPositionZ());
-    gm->clearColor();
-    gm->setColor(1.0,0.0,0.0,1.0);
-    gm->drawSphere(gm->sphereSettings(false,false), Meteorite::SIZE*2, 30, 30);
-    gm->popMatrix();
+    glPushMatrix();
+    glTranslatef(getPositionX(),getPositionY(),getPositionZ());
+    glColor4f(1.0,0.0,0.0,1.0);
+    gluSphere(quad, Meteorite::SIZE, 30, 30);
+    glPopMatrix();
     //gluSphere(this->quad, Meteorite::SIZE*2, 30, 30);
-}
-
-GLfloat Meteorite::getSize()
-{
-    return Meteorite::SIZE;
 }
 
 bool Meteorite::hit(GLfloat playerX ,GLfloat playerY,GLfloat playerZ)
@@ -45,3 +39,4 @@ bool Meteorite::hit(GLfloat playerX ,GLfloat playerY,GLfloat playerZ)
         return true;
     return false;
 }
+

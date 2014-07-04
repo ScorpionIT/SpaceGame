@@ -4,11 +4,12 @@
 #include "opengl.h"
 #include <QGLWidget>
 #include <QKeyEvent>
-#include <QImage>
 #include <QKeyEvent>
+#include <QList>
 
 #include "camera.h"
-#include "model.h"
+#include "engineobject.h"
+#include "hudmessagesystem.h"
 
 typedef struct
 {
@@ -22,40 +23,12 @@ class GameEngine: public QGLWidget
     Q_OBJECT
 
 public:
-    GameEngine(Camera* camera,GLdouble viewVolume);
+    GameEngine(Camera* camera, GLdouble viewVolume);
     void setCamera (Camera* camera);
-
-    void clean(); // Clean screen, call before each redraw
-
-    void drawText (QString text, QFont font=QFont());
-    void drawText (QString text, GLfloat x, GLfloat y, bool center, QFont font=QFont());
-
-    // OPENGL'S DRAWING BASE FUNCTIONS
-    void pushMatrix();
-    void popMatrix();
-    void renderCamera();
-    void Translate (GLfloat x, GLfloat y, GLfloat z);
-    void Rotate (GLfloat angle, GLfloat x, GLfloat y, GLfloat z);
-    void setColor (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
-    void clearColor ();
-
-    // TEXTURE FUNCTIONS
-    void enableTexture();
-    void disableTexture();
-    GLuint loadTexture(QString imgPath);
-    void setTexture(GLuint textureId);
-
-    // GEOMETRIC PRIMITIVES
-    GLUquadric* sphereSettings (GLboolean textured, GLboolean wired);
-    void drawSphere(GLUquadric* settings, GLfloat size, GLint slices, GLint stacks);
-    void drawCube (GLfloat size);
-    /*void drawCube(GLfloat size, GLuint textureId);
-    void drawCube(GLfloat size, GLuint textureId_F, GLuint textureId_R, GLuint textureId_L,
-                                   GLuint textureId_B, GLuint textureId_T, GLuint textureId_B);*/
-
-    // MODEL FUNCTION
-    //Model* loadModel (QString modelPath);
-    void drawModel (Model*model);
+    HudMessageSystem* getHms ();
+    void addObject (EngineObject *obj, bool beforeCamera = false);
+    void removeObject(EngineObject *obj, bool beforeCamera = false);
+    void cleanObject();
 
 protected:
     void initializeGL();
@@ -64,12 +37,10 @@ protected:
     void keyPressEvent(QKeyEvent* event);
     void keyReleaseEvent(QKeyEvent* event);
 
-
 private:
-    int QloadModeltexture(obj_t *obj, char *filename, texture *tex);
-    void glRenderObj(obj_t *obj);
-    GLuint textures[OBJ_MAX_MATERIALS];
-
+    HudMessageSystem* hms;
+    QList<EngineObject*> *objects;
+    QList<EngineObject*> *objectsBeforeCamera;
     Camera *camera;
     GLdouble viewVolume;
     GLfloat ambientLight[4];

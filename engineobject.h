@@ -2,30 +2,50 @@
 #define ENGINEOBJECT_H
 
 #include "opengl.h"
-#include <QObject>
-#include "gameengine.h"
+#include <QGLWidget>
+#include <QString>
+#include <QDebug>
+#include <QOffscreenSurface>
 
+#define approx 15 // COLLISION APPROXIMATION
 
-class EngineObject : public QObject
+struct ObjectSize
+{
+    GLfloat width;
+    GLfloat height;
+    GLfloat depth;
+
+    ObjectSize()
+    {
+        this->width = 0;
+        this->height = 0;
+        this->depth = 0;
+    }
+};
+
+class EngineObject : public QOffscreenSurface
 {
     Q_OBJECT
 
 public:
-    EngineObject (GameEngine* gm);
+    EngineObject ();
     virtual GLfloat getPositionX();
     virtual GLfloat getPositionY();
     virtual GLfloat getPositionZ();
+    virtual ObjectSize getSize();
+    virtual void setSize (GLfloat width, GLfloat height, GLfloat depth);
     virtual void setPosition (GLfloat x, GLfloat y, GLfloat z);
     virtual void render() = 0;
-    virtual GLfloat getSize()=0;
+    static bool collision(EngineObject *obj, EngineObject *obj1);
 
 protected:
-    GameEngine *gm;
+    GLuint loadTexture(QString imgPath);
 
 private:
     GLfloat positionX;
     GLfloat positionY;
     GLfloat positionZ;
+    ObjectSize size;
 
 signals:
 

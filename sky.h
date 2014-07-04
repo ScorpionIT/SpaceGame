@@ -12,13 +12,12 @@ class Sky : public EngineObject
   Q_OBJECT
 
 public:
-  Sky(GameEngine* gm, GLfloat size);
+  Sky(GLfloat size);
   virtual void render();
-  virtual GLfloat getSize();
   void stop();
 
 private:
-  GLfloat size;
+  GLUquadric* quad;
   GLuint textureId;
   GLfloat rotationAngle;
   QTimer *timer;

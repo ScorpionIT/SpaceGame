@@ -9,15 +9,17 @@ class Checkpoint: public EngineObject
     Q_OBJECT
 
 public:
-    Checkpoint(GameEngine* gm, GLfloat x,GLfloat y,GLfloat z,bool active=true);
+    Checkpoint(GLfloat x,GLfloat y,GLfloat z,bool active=true);
     virtual void render();
-    virtual GLfloat getSize();
     void setActive(bool active_);
-    static const GLint SIZE=20;
+    bool isActive();
+    static const GLint SIZE=40;
     static const GLint DISTANCE=SIZE*15;
     static const GLint ADDITIONAL_TIME=10;
 
 private:
+    GLUquadric* quad;
+    GLUquadric* quad2;
     bool active;
 };
 

@@ -5,16 +5,16 @@
 #include "camera.h"
 #include "gameengine.h"
 #include "sky.h"
+#include "model.h"
 #include <cmath>
 
 class Player : public EngineObject
 {
     Q_OBJECT
 public:
-    Player(GameEngine* gm, Camera* camera, Sky* sky);
+    Player(Camera* camera, Sky* sky);
     virtual void render();
-    virtual GLfloat getSize();
-    void pause (bool p);
+    void reset();
     GLfloat getShiftX();
     GLfloat getShiftY();
     GLfloat getShiftZ();
@@ -24,6 +24,8 @@ private:
     Camera* camera;
     Sky* sky;
     Model* model;
+    GLuint modelList;
+    int modelDepth;
     bool seeLeft;
     bool seeRight;
     bool seeUp;
@@ -40,7 +42,11 @@ private:
     GLfloat rotateXZ ;
     GLfloat rotateModelXZ ;
     GLint whingAngle;
+    GLint whingAngleStep;
+    GLint whingMaxAngle;
     GLfloat tailAngle;
+    GLfloat tailAngleStep;
+    GLfloat tailMaxAngle;
     const GLfloat MAX_SPEED;
     const GLfloat STANDARD_SPEED;
     const GLfloat MIN_SPEED;
@@ -55,7 +61,7 @@ signals:
 public slots:
     void moveOn(QString direction);
     void moveOff(QString direction);
-    void move();
+    void update();
 
 
 };

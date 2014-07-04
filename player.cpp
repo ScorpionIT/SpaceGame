@@ -1,10 +1,9 @@
 #include "player.h"
 #include <QDebug>
 
-Player::Player(GameEngine* gm, Camera *camera, Sky* sky) :
-    EngineObject (gm), MAX_SPEED(100), STANDARD_SPEED(50), MIN_SPEED(10)
+Player::Player(Camera *camera, Sky* sky) :
+    MAX_SPEED(100), STANDARD_SPEED(50), MIN_SPEED(10)
 {
-    this->gm=gm;
     this->sky=sky;
     this->camera=camera;
 
@@ -25,46 +24,67 @@ Player::Player(GameEngine* gm, Camera *camera, Sky* sky) :
     rotateXZ = 0.0;
     rotateModelXZ = 0.0;
     whingAngle = 0.0;
+    whingAngleStep = 2;
+    whingMaxAngle = 30;
     tailAngle = 0.0;
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(move()));
-    //setPosition(-2, -5, -20);
-    //setPosition (camera->getEyeX(), camera->getEyeY(), camera->getEyeZ());
-    gm->makeCurrent();
-    model = new Model ("data/obj/f16/f16.obj");
-    pause (false);
+    tailAngleStep = 2;
+    tailMaxAngle = 20.0;
+
+    model = new Model();
+    model->loadModel("data/obj/Wraith Raider Starship/Wraith Raider Starship.obj");
+    model->scaleModel(0.08);
+    model->calcDim();
+    modelDepth = model->getDim().depth-shift*10+MIN_SPEED*2;
+    modelList = model->getGlList();
+
+    int dist = (shift*10)*2-MIN_SPEED*2;
+    GLfloat pX = (-camera->getEyeX()+camera->getForwardX())*dist+camera->getEyeX();
+    GLfloat pY = (-camera->getEyeY()+camera->getForwardY())*dist+camera->getEyeY();
+    GLfloat pZ = (-camera->getEyeZ()+camera->getForwardZ())*dist+camera->getEyeZ();
+
+    setPosition (pX, pY, pZ);
+    setSize (model->getDim().width, model->getDim().height, model->getDim().depth);
+}
+
+void Player::reset()
+{
+    seeLeft=false;
+    seeRight=false;
+    seeUp=false;
+    seeDown=false;
+    moveUp=true;
+    incrementShift=false;
+    decrementShift=false;
+    moveWhingRight=false;
+    moveWhingUp=false;
+    stopMove=false;
+    shift = STANDARD_SPEED/10;
+    rotateAngleXY = 3;
+    rotateAngleXZ = 0.1;
+    rotateXY = 0.0;
+    rotateXZ = 0.0;
+    rotateModelXZ = 0.0;
+    whingAngle = 0.0;
+    tailAngle = 0.0;
 }
 
 void Player::render()
 {
-    gm->pushMatrix();
-    gm->enableTexture();
-    //gm->Translate(getPositionX() ,getPositionY(), getPositionZ());
-    gm->Translate(-2, -5, -10-shift);
-    gm->Rotate(180,0,1,0);
-    gm->Rotate(rotateModelXZ, 1, 0, 0);
-    gm->Rotate(whingAngle,0,0,1);
-    gm->Rotate(tailAngle,0,1,0);
-    gm->drawModel(model);
-    gm->disableTexture();
-    gm->popMatrix();
+    glPushMatrix();
+    glTranslatef(0, -15, -modelDepth-shift*10);
+
+    glRotatef(180,0,1,0);
+    glRotatef(rotateModelXZ, 1, 0, 0);
+    glRotatef(whingAngle,0,0,1);
+    glRotatef(tailAngle,0,1,0);
+
+    glCallList(modelList);
+
+    glPopMatrix();
 
 }
 
-GLfloat Player::getSize()
-{
-    return 0;
-}
-
-void Player::pause(bool p)
-{
-    if (p)
-        timer->stop();
-    else
-        timer->start(25);
-}
-
-void Player::move()
+void Player::update()
 {
     GLfloat px=camera->getEyeX();
     GLfloat py=camera->getEyeY();
@@ -141,11 +161,11 @@ void Player::move()
 
     if(seeRight)
     {
-        if (tailAngle-0.5 >= -10.0)
-            tailAngle -= 0.5;
-        whingAngle += 1;
-        if(whingAngle>=20)
-            whingAngle=20;
+        if (tailAngle-tailAngleStep >= -tailMaxAngle)
+            tailAngle -= tailAngleStep;
+        whingAngle += whingAngleStep;
+        if(whingAngle>=whingMaxAngle)
+            whingAngle=whingMaxAngle;
         rotateXY-=rotateAngleXY;
         if(rotateXY%360==0 )
             rotateXY=0;
@@ -156,9 +176,9 @@ void Player::move()
     {
         if(moveWhingRight)
         {
-            if (tailAngle+0.5 <= 0)
-                tailAngle += 0.5;
-            whingAngle -= 1;
+            if (tailAngle+tailAngleStep <= 0)
+                tailAngle += tailAngleStep;
+            whingAngle -= whingAngleStep;
             if(whingAngle<0)
                 whingAngle=0;
         }
@@ -167,11 +187,13 @@ void Player::move()
 
     if(seeLeft)
     {
-        if (tailAngle+0.5 <= 10)
-            tailAngle += 0.5;
-        whingAngle -= 1;
-        if(whingAngle<=-20)
-            whingAngle=-20;
+        if (tailAngle+tailAngleStep <= tailMaxAngle)
+            tailAngle += tailAngleStep;
+
+        whingAngle -= whingAngleStep;
+        if(whingAngle<=-whingMaxAngle)
+            whingAngle=-whingMaxAngle;
+
         rotateXY+=rotateAngleXY;
         if(rotateXY%360==0 )
             rotateXY=0;
@@ -180,16 +202,22 @@ void Player::move()
     }
     else
     {
-        if (tailAngle-0.5 >= 0)
-            tailAngle -= 0.5;
+        if (tailAngle-tailAngleStep >= 0)
+            tailAngle -= tailAngleStep;
         if(!moveWhingRight)
         {
-            whingAngle += 1;
+            whingAngle += whingAngleStep;
             if(whingAngle>=0)
                 whingAngle=0;
         }
     }
-    //setPosition(camera->getForwardX(),camera->getForwardY(),camera->getForwardZ()); ???
+
+    int dist = (shift*10)*2-MIN_SPEED*2;
+    GLfloat pX = (-camera->getEyeX()+camera->getForwardX())*dist+camera->getEyeX();
+    GLfloat pY = (-camera->getEyeY()+camera->getForwardY())*dist+camera->getEyeY();
+    GLfloat pZ = (-camera->getEyeZ()+camera->getForwardZ())*dist+camera->getEyeZ();
+
+    setPosition (pX, pY, pZ);
 }
 
 void Player::moveOn(QString key)
@@ -242,7 +270,7 @@ GLfloat Player::getShiftZ()
 
 bool Player::isInsideSky(GLdouble px,GLdouble py,GLdouble pz)
 {
-    if(px>=sky->getPositionX()-sky->getSize()/2 && px<=sky->getPositionX()+sky->getSize()/2 && py>=sky->getPositionY()-sky->getSize()/2 && py<=sky->getPositionY()+sky->getSize()/2 && pz>=sky->getPositionZ()-sky->getSize()/2 && pz<=sky->getPositionZ()+sky->getSize()/2 )
+    if(px>=sky->getPositionX()-sky->getSize().width/2 && px<=sky->getPositionX()+sky->getSize().width/2 && py>=sky->getPositionY()-sky->getSize().width/2 && py<=sky->getPositionY()+sky->getSize().width/2 && pz>=sky->getPositionZ()-sky->getSize().width/2 && pz<=sky->getPositionZ()+sky->getSize().width/2 )
         return true;
     return false;
 }

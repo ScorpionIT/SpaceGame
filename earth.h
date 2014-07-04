@@ -9,9 +9,8 @@ class Earth : public EngineObject
     Q_OBJECT
 
 public:
-    Earth(GameEngine* gm, GLfloat x=0, GLfloat y=0, GLfloat z=0, GLfloat size=3);
+    Earth(GLfloat x=0, GLfloat y=0, GLfloat z=0, GLfloat size=3);
     virtual void render();
-    GLfloat getSize();
     void stop();
 
 private:
@@ -19,6 +18,7 @@ private:
     GLuint textureId;
     GLfloat rotationAngle;
     QTimer *timer;
+    GLUquadric* quad;
 
 public slots:
   void rotate();

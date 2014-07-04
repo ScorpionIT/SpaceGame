@@ -10,7 +10,9 @@ HEADERS += \
     opengl.h \
     earth.h \
     obstacle.h \
-    model.h
+    model.h \
+    hudmessagesystem.h \
+    mainwindow.h
 
 
 SOURCES += \
@@ -25,11 +27,15 @@ SOURCES += \
     camera.cpp \
     earth.cpp \
     obstacle.cpp \
-    model.cpp
+    model.cpp \
+    hudmessagesystem.cpp \
+    mainwindow.cpp
 
-LIBS += -L"./libObj/lib" -lobj -lGLU
+LIBS += -lGLU
 
 QT += opengl multimedia
 
 OTHER_FILES +=
+
+RESOURCES +=
 

@@ -1,30 +1,35 @@
 #include "checkpoint.h"
 
-Checkpoint::Checkpoint(GameEngine* gm, GLfloat x, GLfloat y, GLfloat z, bool active_) :
-    EngineObject(gm)
+Checkpoint::Checkpoint(GLfloat x, GLfloat y, GLfloat z, bool active_)
 {
     setPosition (x, y, z);
+    setSize(SIZE, SIZE, SIZE);
     active=active_;
+    quad = gluNewQuadric();
+    quad2 = gluNewQuadric();
+    gluQuadricDrawStyle(quad, GLU_LINE);
 }
 void Checkpoint::render()
 {
-    gm->pushMatrix();
-    gm->Translate(getPositionX(),getPositionY(),getPositionZ());
-    gm->setColor(0.5,0.5,0.0,1.0);
+    glPushMatrix();
+    glTranslatef(getPositionX(),getPositionY(),getPositionZ());
+    glColor4f(0.5,0.5,0.0,1.0);
     if(!active)
-        gm->drawSphere(gm->sphereSettings(false, true), Checkpoint::SIZE*2, 7, 7);
+    {
+        gluSphere(quad,Checkpoint::SIZE, 7, 7);
+    }
     else
-        gm->drawSphere(gm->sphereSettings(false,false), Checkpoint::SIZE*2, 30, 30);
-    gm->popMatrix();
-}
-
-GLfloat Checkpoint::getSize()
-{
-    return SIZE;
+        gluSphere(quad2,Checkpoint::SIZE, 30, 30);
+    glPopMatrix();
 }
 
 void Checkpoint::setActive(bool active_)
 {
     active=active_;
+}
+
+bool Checkpoint::isActive()
+{
+    return active;
 }
 
