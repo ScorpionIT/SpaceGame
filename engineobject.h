@@ -6,7 +6,6 @@
 #include <QString>
 #include <QDebug>
 #include <QOffscreenSurface>
-
 #define approx 15 // COLLISION APPROXIMATION
 
 struct ObjectSize

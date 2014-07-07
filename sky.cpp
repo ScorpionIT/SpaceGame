@@ -13,7 +13,7 @@ Sky::Sky(GLfloat size)
     this->quad = gluNewQuadric();
     gluQuadricTexture(this->quad, GLU_TRUE);
 
-    this->textureId = loadTexture("data/texture/stars.jpg");
+    this->textureId = loadTexture("data/texture/starmap.png");
 }
 
 void Sky::render()

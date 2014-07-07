@@ -25,6 +25,7 @@ GameMineCrisis::GameMineCrisis()
     backgroundMusic = new QMediaPlayer();
     backgroundMusic->setMedia(QUrl::fromLocalFile(dataDir.absolutePath()+"/audio/background.ogg"));
     backgroundMusic->setVolume(75);
+    backgroundMusic->play();
 
     checkpointEffect = new QMediaPlayer();
     checkpointEffect->setMedia(QUrl::fromLocalFile(dataDir.absolutePath()+"/audio/checkpoint.ogg"));
@@ -71,7 +72,9 @@ void GameMineCrisis::start(bool connect)
         gm->resize (1024, 768);
         gm->show();
     }
-    backgroundMusic->play();
+    //gm->addObjectToRenderAfterRenderCamera(sky);
+    //gm->resize (800, 600);
+    gm->showFullScreen();
     if (!timer_gameMainLoop->isActive())
         timer_gameMainLoop->start(1);
     startTime = QTime::currentTime();

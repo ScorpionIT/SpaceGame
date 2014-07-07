@@ -33,9 +33,8 @@ SOURCES += \
 
 LIBS += -lGLU
 
-QT += opengl multimedia
+QT +=  opengl multimedia gui
 
 OTHER_FILES +=
 
 RESOURCES +=
-
