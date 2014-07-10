@@ -99,6 +99,7 @@ void GameMineCrisis::restart()
     meteorites.clear();
     checkpoints.clear();
     obstacles.clear();
+    backgroundMusic->play();
     start(false);
 }
 
@@ -317,7 +318,7 @@ void GameMineCrisis::updateTimer()
 {
     QTime current = QTime::currentTime();
     timerGame = timerGameT.addMSecs(current.msecsTo(startTime));
-    if(timerGame.minute() && timerGame.second() == 0)
+    if(timerGame.minute()==0 && timerGame.second() == 0)
     {
         timerGame.setHMS(0, 0, 0, 0);
         gameOver();
