@@ -46,6 +46,7 @@ GameMineCrisis::GameMineCrisis()
 void GameMineCrisis::start(bool connect)
 {
     this->gameover = false;
+    this->win = false;
     numberOfcheckpoint=NUMBER_OF_CHECKPOINTS;
     pause = false;
     timerGameT = QTime(0, 0, 40, 0);
@@ -72,8 +73,6 @@ void GameMineCrisis::start(bool connect)
         gm->resize (1024, 768);
         gm->show();
     }
-    //gm->addObjectToRenderAfterRenderCamera(sky);
-    //gm->resize (800, 600);
     gm->showFullScreen();
     if (!timer_gameMainLoop->isActive())
         timer_gameMainLoop->start(1);
@@ -96,6 +95,11 @@ void GameMineCrisis::restart()
         this->gameover = false;
         hms->removeText("GAMEOVER");
     }
+    if (win)
+    {
+        this->win = false;
+        hms->removeText("WIN");
+    }
     meteorites.clear();
     checkpoints.clear();
     obstacles.clear();
@@ -105,7 +109,7 @@ void GameMineCrisis::restart()
 
 void GameMineCrisis::gameMainLoop()
 {
-    if (!gameover && !pause)
+    if (!gameover && !win && !pause)
     {
         this->update();
         player->update();
@@ -123,7 +127,11 @@ void GameMineCrisis::gameMainLoop()
     {
         textFont.setPixelSize(80);
         hms->setText("GAMEOVER", QString ("GAME OVER"), textFont, Qt::green);
-
+    }
+    else if (win)
+    {
+        textFont.setPixelSize(80);
+        hms->setText("WIN", QString ("YOU WON"), textFont, Qt::green);
     }
     else if (pause)
     {
@@ -241,13 +249,6 @@ void GameMineCrisis::update()
         if (EngineObject::collision (player, obstacles[i]))
             gameOver();
     }
-    /*if(isThereAnObject(player->getPositionX(),player->getPositionY(),player->getPositionZ(),meteorites)!=-1)
-        gameOver();
-    if(isThereAnObject(player->getPositionX(),player->getPositionY(),player->getPositionZ(),obstacles)!=-1)
-        gameOver();*/
-
-    //int indexOfObject=isThereAnObject(player->getPositionX(),player->getPositionY(),player->getPositionZ(),checkpoints);
-    //if(indexOfObject==0)
     for(int i=0; i<checkpoints.size(); i++)
     {
         if (EngineObject::collision (player, checkpoints[i]) && dynamic_cast<Checkpoint*>(checkpoints[i])->isActive())
@@ -268,6 +269,8 @@ void GameMineCrisis::update()
     }
     // COLLISIONI
 
+    if (numberOfcheckpoint == 0)
+        this->win = true;
     hud_checkpoints.clear();
     hud_checkpoints.append("Checkpoints: ");
     hud_checkpoints.append (QString::number(numberOfcheckpoint));
@@ -302,7 +305,7 @@ void GameMineCrisis::processKeys(QString key)
     }
     else if (key == "R")
     {
-        if (gameover || pause)
+        if (gameover || win || pause)
             restart();
     }
 }

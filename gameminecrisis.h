@@ -57,6 +57,7 @@ private:
     QMediaPlayer* gameOverEffect;
     int numberOfcheckpoint;
     bool gameover;
+    bool win;
     bool pause;
 
     void addRandomObstacles();

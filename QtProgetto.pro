@@ -11,8 +11,7 @@ HEADERS += \
     earth.h \
     obstacle.h \
     model.h \
-    hudmessagesystem.h \
-    mainwindow.h
+    hudmessagesystem.h
 
 
 SOURCES += \
@@ -28,8 +27,7 @@ SOURCES += \
     earth.cpp \
     obstacle.cpp \
     model.cpp \
-    hudmessagesystem.cpp \
-    mainwindow.cpp
+    hudmessagesystem.cpp
 
 LIBS += -lGLU
 
