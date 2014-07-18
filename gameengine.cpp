@@ -30,6 +30,22 @@ GameEngine::GameEngine(Camera *camera, GLdouble viewVolume_):
     lightPos0[2] = 15000.0;
     lightPos0[3] = 1.0;
 
+    lightPos1[0] = 0.0;
+    lightPos1[1] = 15000.0;
+    lightPos1[2] = 0.0;
+    lightPos1[3] = 1.0;
+
+    lightPos2[0] = 0.0;
+    lightPos2[1] = 0.0;
+    lightPos2[2] = 15000.0;
+    lightPos2[3] = 1.0;
+
+    lightPos3[0] = 15000.0;
+    lightPos3[1] = 0.0;
+    lightPos3[2] = 0.0;
+    lightPos3[3] = 1.0;
+
+
     spotDir0[0] = 0.0;
     spotDir0[1] = 0.0;
     spotDir0[2] = -0.0;
@@ -49,16 +65,41 @@ void GameEngine::initializeGL()
     glLightfv(GL_LIGHT0,GL_DIFFUSE,ambientLight);
     glLightfv(GL_LIGHT0,GL_SPECULAR,specular);
     glLightfv(GL_LIGHT0,GL_POSITION,lightPos0);
-    //	glLightf(GL_LIGHT0,GL_SPOT_CUTOFF,30.0f);
+    glLightf(GL_LIGHT0,GL_SPOT_CUTOFF,50.0f);
     glEnable(GL_LIGHT0);
+
+   /* glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
+    glLightfv(GL_LIGHT1,GL_DIFFUSE,ambientLight);
+    glLightfv(GL_LIGHT1,GL_SPECULAR,specular);
+    glLightfv(GL_LIGHT1,GL_POSITION,lightPos1);
+    //	glLightf(GL_LIGHT0,GL_SPOT_CUTOFF,30.0f);
+    glEnable(GL_LIGHT1);
+
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
+    glLightfv(GL_LIGHT2,GL_DIFFUSE,ambientLight);
+    glLightfv(GL_LIGHT2,GL_SPECULAR,specular);
+    glLightfv(GL_LIGHT2,GL_POSITION,lightPos2);
+    //	glLightf(GL_LIGHT0,GL_SPOT_CUTOFF,30.0f);
+    //glEnable(GL_LIGHT2);
+
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
+    glLightfv(GL_LIGHT3,GL_DIFFUSE,ambientLight);
+    glLightfv(GL_LIGHT3,GL_SPECULAR,specular);
+    glLightfv(GL_LIGHT3,GL_POSITION,lightPos3);
+    //	glLightf(GL_LIGHT0,GL_SPOT_CUTOFF,30.0f);
+    //glEnable(GL_LIGHT3);*/
 
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
     glMaterialfv(GL_FRONT, GL_SPECULAR,specref);
-    glMateriali(GL_FRONT, GL_SHININESS,1);
+    glMateriali(GL_FRONT, GL_SHININESS,128);
 
     glEnable(GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    /*glEnable(GL_FOG);
+        glFogf(GL_FOG_START, 10.0);
+        glFogf(GL_FOG_END, 87000.0);*/
 
     glClearColor (0.0, 0.0, 0.0, 0.0);
 }
@@ -66,7 +107,12 @@ void GameEngine::initializeGL()
 void GameEngine::paintGL()
 {
     glClearColor (0.0, 0.0, 0.0, 0.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    GLfloat fog_color[]		= {0.1, 0.1, 0.1, 1.0};
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glFogfv(GL_FOG_COLOR, fog_color);
+        glFogi(GL_FOG_MODE, GL_LINEAR);
     glLoadIdentity();
 
     for (QList<EngineObject*>::iterator obj = objectsBeforeCamera->begin(); obj != objectsBeforeCamera->end(); obj++)

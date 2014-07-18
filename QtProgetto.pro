@@ -14,6 +14,7 @@ HEADERS += \
     hudmessagesystem.h
 
 
+
 SOURCES += \
     gameengine.cpp \
     sky.cpp \
@@ -27,7 +28,7 @@ SOURCES += \
     earth.cpp \
     obstacle.cpp \
     model.cpp \
-    hudmessagesystem.cpp
+    hudmessagesystem.cpp \
 
 LIBS += -lGLU
 

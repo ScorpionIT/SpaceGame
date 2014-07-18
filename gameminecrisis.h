@@ -55,6 +55,7 @@ private:
     QMediaPlayer* checkpointEffect;
     QMediaPlayer* turboEffect;
     QMediaPlayer* gameOverEffect;
+    QMediaPlayer* winEffect;
     int numberOfcheckpoint;
     bool gameover;
     bool win;
@@ -66,6 +67,7 @@ private:
 
 private slots:
     void gameOver();
+    void winF();
     void gameMainLoop();
     void update();
     void updateTimer ();

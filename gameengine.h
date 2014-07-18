@@ -47,6 +47,9 @@ private:
     GLfloat specular[4];
     GLfloat specref[4];
     GLfloat lightPos0[4];
+    GLfloat lightPos1[4];
+    GLfloat lightPos2[4];
+    GLfloat lightPos3[4];
     GLfloat  spotDir0[3];
 
 signals:

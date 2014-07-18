@@ -40,6 +40,10 @@ GameMineCrisis::GameMineCrisis()
     gameOverEffect->setMedia(QUrl::fromLocalFile(dataDir.absolutePath()+"/audio/gameover.ogg"));
     gameOverEffect->setVolume(100);
 
+    winEffect = new QMediaPlayer();
+    winEffect->setMedia(QUrl::fromLocalFile(dataDir.absolutePath()+"/audio/win.ogg"));
+    winEffect->setVolume(100);
+
     this->hms = gm->getHms();
 }
 
@@ -47,7 +51,7 @@ void GameMineCrisis::start(bool connect)
 {
     this->gameover = false;
     this->win = false;
-    numberOfcheckpoint=NUMBER_OF_CHECKPOINTS;
+    numberOfcheckpoint=2;
     pause = false;
     timerGameT = QTime(0, 0, 40, 0);
 
@@ -131,7 +135,7 @@ void GameMineCrisis::gameMainLoop()
     else if (win)
     {
         textFont.setPixelSize(80);
-        hms->setText("WIN", QString ("YOU WON"), textFont, Qt::green);
+        hms->setText("WIN", QString ("YOU WIN"), textFont, Qt::green);
     }
     else if (pause)
     {
@@ -229,6 +233,15 @@ void GameMineCrisis::gameOver()
     gameOverEffect->play();
 }
 
+void GameMineCrisis::winF()
+{
+    uTimer->stop();
+    //sky->stop();
+    this->win = true;
+    backgroundMusic->stop();
+    winEffect->play();
+}
+
 void GameMineCrisis::update()
 {
     for(int i=0;i<meteorites.size();i++)
@@ -270,7 +283,7 @@ void GameMineCrisis::update()
     // COLLISIONI
 
     if (numberOfcheckpoint == 0)
-        this->win = true;
+        winF();
     hud_checkpoints.clear();
     hud_checkpoints.append("Checkpoints: ");
     hud_checkpoints.append (QString::number(numberOfcheckpoint));
