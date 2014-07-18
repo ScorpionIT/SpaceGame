@@ -51,7 +51,7 @@ void GameMineCrisis::start(bool connect)
 {
     this->gameover = false;
     this->win = false;
-    numberOfcheckpoint=2;
+    numberOfcheckpoint=NUMBER_OF_CHECKPOINTS;
     pause = false;
     timerGameT = QTime(0, 0, 40, 0);
 
